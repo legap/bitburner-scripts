@@ -48,7 +48,7 @@ export async function main(ns) {
     const procs = ns.ps(currentHost);
     for (const proc of procs) {
       if (proc.filename.includes("global-kill") || proc.pid === ns.pid || proc.filename.includes("stock")) {
-        ns.tprint(`Skipping local process ${proc.filename} with pid ${proc.filename}`);
+        ns.tprint(`Skipping local process ${proc.filename} with pid ${proc.pid}`);
         continue;
       }
       ns.tprint(`Killing local process ${proc.filename} with pid ${proc.pid}`);
