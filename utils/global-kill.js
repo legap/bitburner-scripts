@@ -29,7 +29,7 @@ export async function main(ns) {
   // Kill all processes on other servers first
   for (const host of servers) {
     if (host === currentHost) continue; // Save current host for last
-    
+
     try {
       const procs = ns.ps(host);
       const killed = ns.killall(host);
@@ -43,15 +43,17 @@ export async function main(ns) {
     }
   }
 
-  // Finally, kill everything on current host except this script
+  // Finally, kill everything on current host except this script and all running trading scripts
   try {
     const procs = ns.ps(currentHost);
     for (const proc of procs) {
-      if (proc.filename !== "global-kill.js" && proc.pid !== ns.pid) {
-        ns.kill(proc.pid);
-        totalKilled++;
-        await ns.sleep(10); // Small delay between kills
+      if (proc.filename.includes("global-kill" || proc.pid === ns.pid || proc.filename.includes("stock"))) {
+        continue;
       }
+      ns.kill(proc.pid);
+      totalKilled++;
+      await ns.sleep(10); // Small delay between kills
+
     }
   } catch (e) {
     // Ignore errors
