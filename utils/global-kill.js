@@ -48,8 +48,10 @@ export async function main(ns) {
     const procs = ns.ps(currentHost);
     for (const proc of procs) {
       if (proc.filename.includes("global-kill" || proc.pid === ns.pid || proc.filename.includes("stock"))) {
+        ns.tprint(`Skipping local process ${proc.filename} with pid ${proc.filename}`);
         continue;
       }
+      ns.tprint(`Killing local process ${proc.filename} with pid ${proc.pid}`);
       ns.kill(proc.pid);
       totalKilled++;
       await ns.sleep(10); // Small delay between kills
