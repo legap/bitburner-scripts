@@ -3,7 +3,7 @@
 
 # IDE and Editor files
 .vscode/
-.idea/
+.idea
 *.swp
 *.swo
 *~
@@ -19,7 +19,7 @@ desktop.ini
 *.tmp
 
 # Node modules (if using any build tools)
-node_modules/
+node_modules
 package-lock.json
 
 # PowerShell artifacts and scripts
@@ -43,5 +43,3 @@ package-lock.json
 docs/**/CLAUDE_CODE*.md
 docs/**/claude-code*.md
 
-# Keep all directories
-!*/
