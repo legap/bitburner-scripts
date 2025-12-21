@@ -1,13 +1,18 @@
 # Error Handling and Logging Improvements
 
-This document details the specific improvements made to error handling and logging throughout the Bitburner script collection.
+This document details the specific improvements made to error handling and logging throughout the Bitburner script
+collection.
 
 ## 📋 Overview of Improvements
 
 ### 1. **Structured Logging System**
+
 ### 2. **Try-Catch Error Handling**
+
 ### 3. **Validation and Early Returns**
+
 ### 4. **Detailed Error Messages**
+
 ### 5. **Success/Failure Tracking**
 
 ---
@@ -17,15 +22,18 @@ This document details the specific improvements made to error handling and loggi
 ### Simple Batcher (`batch/simple-batcher.js`)
 
 **Before** (implicit):
+
 ```javascript
 ns.tprint("something happened");
 ```
 
 **After** (structured):
+
 ```javascript
 const log = (...parts) => {
   const msg = parts.join(" ");
-  if (quiet) ns.print(msg); else ns.tprint(msg);
+  if (quiet) ns.print(msg);
+  else ns.tprint(msg);
 };
 const logError = (...parts) => ns.tprint(parts.join(" "));
 
@@ -34,6 +42,7 @@ logError(`ERROR: helper missing on ${host}: ${f}`);
 ```
 
 **Benefits**:
+
 - Supports `--quiet` flag for reduced output
 - Consistent error formatting
 - Separates info logs from error logs
@@ -41,6 +50,7 @@ logError(`ERROR: helper missing on ${host}: ${f}`);
 ### Batch Manager (`batch/batch-manager.js`)
 
 **Improvement**:
+
 ```javascript
 const info = (...parts) => ns.print(parts.join(" "));
 const warn = (...parts) => ns.tprint("[WARN] " + parts.join(" "));
@@ -51,6 +61,7 @@ error(`Insufficient RAM on ${pservHost}: free=${freeRam.toFixed(2)}GB need=${scr
 ```
 
 **Benefits**:
+
 - Three-level logging (info, warn, error)
 - Clear severity indicators
 - Quiet-aware logging
@@ -62,6 +73,7 @@ error(`Insufficient RAM on ${pservHost}: free=${freeRam.toFixed(2)}GB need=${scr
 ### Deploy Hack Joesguns (`deploy/deploy-hack-joesguns.js`)
 
 **Improvement**:
+
 ```javascript
 for (const host of servers) {
   if (!ns.hasRootAccess(host)) continue;
@@ -81,15 +93,14 @@ for (const host of servers) {
     // Check RAM
     const ramPer = ns.getScriptRam(script, host);
     const free = Math.max(0, ns.getServerMaxRam(host) - ns.getServerUsedRam(host));
-    
+
     if (free < ramPer) {
       ns.tprint(`${host}: insufficient RAM (${free.toFixed(2)}GB < ${ramPer.toFixed(2)}GB)`);
       failed++;
       continue;
     }
-    
+
     // ... deployment logic ...
-    
   } catch (e) {
     ns.tprint(`Error deploying to ${host}: ${e}`);
     failed++;
@@ -98,6 +109,7 @@ for (const host of servers) {
 ```
 
 **Benefits**:
+
 - Catches unexpected errors
 - Continues execution on failure
 - Tracks failed operations
@@ -106,6 +118,7 @@ for (const host of servers) {
 ### Server Info (`utils/server-info.js`)
 
 **Improvement**:
+
 ```javascript
 try {
   const info = {
@@ -118,13 +131,13 @@ try {
   ns.tprint(`\n=== Server Information: ${target} ===`);
   ns.tprint(`Money: ${ns.nFormat(info.currentMoney, "$0.00a")} / ${ns.nFormat(info.maxMoney, "$0.00a")}`);
   // ... more output ...
-  
 } catch (e) {
   ns.tprint(`Error getting server info for ${target}: ${e}`);
 }
 ```
 
 **Benefits**:
+
 - Graceful failure on invalid server
 - User-friendly error message
 - Prevents script crash
@@ -136,6 +149,7 @@ try {
 ### Simple Batcher (`batch/simple-batcher.js`)
 
 **Improvement**:
+
 ```javascript
 // Validate target parameter
 const target = args.shift();
@@ -167,6 +181,7 @@ if (threads < 1) {
 ```
 
 **Benefits**:
+
 - Early validation prevents downstream errors
 - Clear usage message
 - Specific error conditions identified
@@ -175,6 +190,7 @@ if (threads < 1) {
 ### Auto Deploy All (`deploy/auto-deploy-all.js`)
 
 **Improvement**:
+
 ```javascript
 if (!ns.fileExists(script, "home")) {
   ns.tprint(`ERROR: ${script} not on home`);
@@ -183,13 +199,14 @@ if (!ns.fileExists(script, "home")) {
 
 // ... later in loop ...
 
-if (free < ramPer) { 
-  ns.tprint(`${host}: insufficient RAM (${free} < ${ramPer})`); 
-  continue; 
+if (free < ramPer) {
+  ns.tprint(`${host}: insufficient RAM (${free} < ${ramPer})`);
+  continue;
 }
 ```
 
 **Benefits**:
+
 - Validates prerequisites before execution
 - Clear error messages
 - Continues to next server on failure
@@ -201,6 +218,7 @@ if (free < ramPer) {
 ### Batch Manager (`batch/batch-manager.js`)
 
 **Improvement**:
+
 ```javascript
 // Detailed SCP failure message
 if (!ok) {
@@ -226,6 +244,7 @@ if (pid > 0) {
 ```
 
 **Benefits**:
+
 - Explains what went wrong
 - Provides diagnostic information
 - Suggests next steps
@@ -234,6 +253,7 @@ if (pid > 0) {
 ### Replace Purchased Servers (`deploy/replace-pservs-no-copy.js`)
 
 **Improvement**:
+
 ```javascript
 ns.tprint(`Replacing ${pservs.length} purchased servers with ${ram}GB RAM`);
 ns.tprint(`Cost per server: ${ns.nFormat(cost, "$0.00a")}`);
@@ -262,6 +282,7 @@ if (purchased) {
 ```
 
 **Benefits**:
+
 - Pre-operation summary
 - Cost calculation displayed
 - Clear success/failure per operation
@@ -274,13 +295,14 @@ if (purchased) {
 ### Deploy Hack Joesguns (`deploy/deploy-hack-joesguns.js`)
 
 **Improvement**:
+
 ```javascript
 let deployed = 0;
 let failed = 0;
 
 for (const host of servers) {
   // ... deployment logic ...
-  
+
   const pid = ns.exec(script, host, threads);
   if (pid > 0) {
     ns.tprint(`Deployed ${script} on ${host} with ${threads} threads (pid: ${pid})`);
@@ -295,6 +317,7 @@ ns.tprint(`\nDeployment complete: ${deployed} successful, ${failed} failed`);
 ```
 
 **Benefits**:
+
 - Tracks operation statistics
 - Final summary shows success rate
 - Easy to identify problematic servers
@@ -303,6 +326,7 @@ ns.tprint(`\nDeployment complete: ${deployed} successful, ${failed} failed`);
 ### Replace Purchased Servers (`deploy/replace-pservs-no-copy.js`)
 
 **Improvement**:
+
 ```javascript
 let replaced = 0;
 let failed = 0;
@@ -327,6 +351,7 @@ ns.tprint(`\nReplacement complete: ${replaced} successful, ${failed} failed`);
 ```
 
 **Benefits**:
+
 - Completion summary
 - Clear success metrics
 - Easy troubleshooting
@@ -338,6 +363,7 @@ ns.tprint(`\nReplacement complete: ${replaced} successful, ${failed} failed`);
 ### Simple Batcher (`batch/simple-batcher.js`)
 
 **Improvement**:
+
 ```javascript
 // Outer try for scp
 try {
@@ -359,7 +385,11 @@ try {
     if (helpers.includes(p.filename)) {
       found = true;
       if (!dryRun) {
-        try { ns.kill(p.filename, h); } catch (e) { /* ignore */ }
+        try {
+          ns.kill(p.filename, h);
+        } catch (e) {
+          /* ignore */
+        }
       }
     }
   }
@@ -372,6 +402,7 @@ try {
 ```
 
 **Benefits**:
+
 - Independent error handling for each operation
 - One failure doesn't cascade
 - Specific error messages per operation
@@ -384,6 +415,7 @@ try {
 ### Home Batcher (`batch/home-batcher.js`)
 
 **Improvement**:
+
 ```javascript
 const ramPerThread = ns.getScriptRam(hackScript, host);
 if (!ramPerThread || isNaN(ramPerThread) || ramPerThread <= 0) {
@@ -399,6 +431,7 @@ if (threads < 1) {
 ```
 
 **Benefits**:
+
 - Multiple validation conditions
 - Formatted numbers for readability
 - Clear comparison of available vs required
@@ -409,15 +442,15 @@ if (threads < 1) {
 
 ### ✅ Before vs After
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Error Messages** | Generic or missing | Specific with context |
-| **Logging** | Inconsistent | Structured with levels |
-| **Validation** | Basic | Comprehensive with early returns |
-| **Error Recovery** | Script crashes | Graceful continuation |
-| **Debugging** | Difficult | Detailed diagnostic info |
-| **Success Tracking** | None | Counters and summaries |
-| **User Feedback** | Minimal | Clear, actionable messages |
+| Aspect               | Before             | After                            |
+| -------------------- | ------------------ | -------------------------------- |
+| **Error Messages**   | Generic or missing | Specific with context            |
+| **Logging**          | Inconsistent       | Structured with levels           |
+| **Validation**       | Basic              | Comprehensive with early returns |
+| **Error Recovery**   | Script crashes     | Graceful continuation            |
+| **Debugging**        | Difficult          | Detailed diagnostic info         |
+| **Success Tracking** | None               | Counters and summaries           |
+| **User Feedback**    | Minimal            | Clear, actionable messages       |
 
 ### 🎯 Key Benefits
 
@@ -430,4 +463,5 @@ if (threads < 1) {
 
 ---
 
-This comprehensive error handling makes the script collection production-ready and significantly easier to debug and maintain!
+This comprehensive error handling makes the script collection production-ready and significantly easier to debug and
+maintain!

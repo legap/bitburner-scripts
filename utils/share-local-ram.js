@@ -1,4 +1,4 @@
-/** @param {NS} ns */
+/** @param {import("../types/NetscriptDefinitions").NS} ns */
 export async function main(ns) {
   // Deploys share-ram.js to all rooted servers and runs it
   // This maximizes faction reputation bonus by sharing RAM across your entire network
@@ -17,7 +17,7 @@ export async function main(ns) {
   ns.tprint("STARTING RAM SHARING ON HOME");
   ns.tprint("=".repeat(60));
 
-  const server = "home"
+  const server = "home";
 
   // Calculate available RAM and threads
   const maxRam = ns.getServerMaxRam(server);
@@ -52,7 +52,6 @@ export async function main(ns) {
   } else {
     ns.tprint(`✗ ${server.padEnd(20)} - Failed to start`);
   }
-
 
   ns.tprint("=".repeat(60));
   ns.tprint(`DEPLOYMENT COMPLETE`);

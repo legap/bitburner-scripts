@@ -6,9 +6,11 @@ All notable changes to this Bitburner script collection are documented in this f
 
 ### Fixed - Deprecated ns.nFormat() Usage in All Analysis Scripts
 
-**Issue**: Multiple analysis scripts triggered deprecation warning: "Accessed deprecated function or property: ns.nFormat"
+**Issue**: Multiple analysis scripts triggered deprecation warning: "Accessed deprecated function or property:
+ns.nFormat"
 
 **Affected Scripts**:
+
 - `analysis/profit-scan-flex.js` - Fleet potential rankings
 - `analysis/f-profit-scan-flex.js` - Formulas.exe enhanced profit scanner
 - `analysis/profit-scan.js` - Basic profit scanner
@@ -16,14 +18,17 @@ All notable changes to this Bitburner script collection are documented in this f
 - `analysis/f-estimate-production.js` - Formulas.exe production estimates
 - `analysis/estimate-production.js` - Basic production estimates
 
-**Root Cause**: The `formatNumber()` / `formatMoney()` helper functions were attempting to use deprecated `ns.nFormat()` first, triggering warnings even though they had fallback logic.
+**Root Cause**: The `formatNumber()` / `formatMoney()` helper functions were attempting to use deprecated `ns.nFormat()`
+first, triggering warnings even though they had fallback logic.
 
 **Solution**: Updated three-tier compatibility approach to prioritize newer API methods:
+
 1. Try `ns.formatNumber()` first (v3.0.0+ method)
 2. Fall back to `ns.nFormat()` (v2.8.1 method - deprecated)
 3. Manual formatting fallback (`$XXXb/$XXXm/$XXXk`)
 
 **Technical Implementation**:
+
 ```javascript
 function formatNumber(ns, v) {
   // Try ns.formatNumber() (v3.0.0+)
@@ -32,29 +37,31 @@ function formatNumber(ns, v) {
       return ns.formatNumber(v, "$0.00a");
     }
   } catch (e) {}
-  
+
   // Fall back to ns.nFormat() (v2.8.1 - deprecated)
   try {
     if (ns.nFormat) {
       return ns.nFormat(v, "$0.00a");
     }
   } catch (e) {}
-  
+
   // Manual formatting fallback
-  if (v >= 1e9) return `$${(v/1e9).toFixed(2)}b`;
-  if (v >= 1e6) return `$${(v/1e6).toFixed(2)}m`;
-  if (v >= 1e3) return `$${(v/1e3).toFixed(2)}k`;
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}b`;
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}m`;
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(2)}k`;
   return `$${v.toFixed(2)}`;
 }
 ```
 
 **Result**:
+
 - Zero deprecation warnings in v3.0.0+
 - Full backward compatibility with v2.8.1
 - Clean script output without API warnings
 - Identical formatting behavior across all versions
 
-**Pattern**: This follows the same proven compatibility approach used in `smart-batcher.js` (v1.8.7) for seamless multi-version support.
+**Pattern**: This follows the same proven compatibility approach used in `smart-batcher.js` (v1.8.7) for seamless
+multi-version support.
 
 **Version Compatibility**: ✅ v2.8.1 | ✅ v3.0.0+
 
@@ -67,16 +74,18 @@ function formatNumber(ns, v) {
 **Critical Bug**: Server money depletion in BitNode 2 and other BitNodes with non-standard multipliers
 
 **Updated Scripts**:
+
 - `batch/smart-batcher.js` - Now uses BitNode-aware thread calculations with Formulas.exe
 - `batch/batch-manager.js` - Automatically benefits from smart-batcher.js fixes
 
-**The Problem**:
-BitNode 2 has special multipliers that affect game mechanics:
+**The Problem**: BitNode 2 has special multipliers that affect game mechanics:
+
 - `ServerGrowthRate: 0.8` (80%) - Grow operations are 20% weaker
 - `ScriptHackMoney: 1.0` (100%) - Hack operations are normal
 - `ServerWeakenRate < 1.0` - Weaken operations are weaker
 
 **Original Implementation**:
+
 ```javascript
 // Line 98-99 - HARDCODED estimation
 const growMultiplier = Math.max(2, 1 / hackPercent);
@@ -84,11 +93,13 @@ const growThreadsBase = Math.ceil(hackThreadsBase * growMultiplier);
 ```
 
 This simplified estimation worked in vanilla BitNode 1 but failed in BN2:
+
 - Calculated too FEW grow threads (didn't account for 0.8 growth rate)
 - Calculated incorrect weaken threads (used constant 0.05 instead of dynamic value)
 - Result: Server money depleted over time instead of staying at max
 
 **User Reports**:
+
 - Test 1: joesguns depleted from 100% → <2% after continuous batching in BN2
 - Test 2: Starting at 20% money, depleted to 2.7% after 10 cycles
 - Security level dropped (15 → 14.05) showing incorrect weaken ratios
@@ -97,12 +108,14 @@ This simplified estimation worked in vanilla BitNode 1 but failed in BN2:
 **The Fix** (v1.8.17):
 
 **1. BitNode-Aware Weaken Calculation**:
+
 ```javascript
 // Line 87 - Dynamic weaken amount (accounts for BitNode multipliers)
 const WEAKEN_AMOUNT = ns.weakenAnalyze(1);
 ```
 
 **2. Formulas.exe Integration** (Primary Method):
+
 ```javascript
 if (hasFormulas) {
   // Use precise formulas calculation (accounts for ServerGrowthRate multiplier)
@@ -114,6 +127,7 @@ if (hasFormulas) {
 ```
 
 **3. Enhanced Estimation Fallback** (When Formulas.exe Not Available):
+
 ```javascript
 else {
   // Account for typical BitNode growth variations
@@ -124,9 +138,14 @@ else {
 ```
 
 **4. Enhanced Display Output**:
+
 ```javascript
 ns.tprint(`  Weaken per thread: ${WEAKEN_AMOUNT.toFixed(4)} security`);
-ns.tprint(`  Calculation method: ${hasFormulas ? "✓ Formulas.exe (BitNode-aware)" : "⚠ Estimation (may be inaccurate in some BitNodes)"}`);
+ns.tprint(
+  `  Calculation method: ${
+    hasFormulas ? "✓ Formulas.exe (BitNode-aware)" : "⚠ Estimation (may be inaccurate in some BitNodes)"
+  }`
+);
 
 if (!hasFormulas) {
   ns.tprint(`\n⚠️  WARNING: Formulas.exe not found!`);
@@ -136,34 +155,30 @@ if (!hasFormulas) {
 }
 ```
 
-**What It Fixes**:
-✅ Server money now stays at maximum instead of depleting
-✅ Security stays at minimum instead of drifting
-✅ Accurate thread ratios in ALL BitNodes (BN1-BN13)
-✅ Proper accounting for:
-  - ServerGrowthRate multiplier (grow operations)
-  - ServerWeakenRate multiplier (weaken operations)
-  - ScriptHackMoney multiplier (hack operations)
+**What It Fixes**: ✅ Server money now stays at maximum instead of depleting ✅ Security stays at minimum instead of
+drifting ✅ Accurate thread ratios in ALL BitNodes (BN1-BN13) ✅ Proper accounting for:
 
-**BitNode Compatibility**:
-| BitNode | ServerGrowthRate | Status |
-|---------|------------------|--------|
-| BN1 | 1.0 (100%) | ✅ Always worked |
-| BN2 | 0.8 (80%) | ✅ NOW FIXED |
-| BN3 | 0.8 (80%) | ✅ NOW FIXED |
-| BN8 | 0.0 (0%) | ✅ Formulas handles edge case |
-| Others | Varies | ✅ Dynamically calculated |
+- ServerGrowthRate multiplier (grow operations)
+- ServerWeakenRate multiplier (weaken operations)
+- ScriptHackMoney multiplier (hack operations)
+
+**BitNode Compatibility**: | BitNode | ServerGrowthRate | Status | |---------|------------------|--------| | BN1 | 1.0
+(100%) | ✅ Always worked | | BN2 | 0.8 (80%) | ✅ NOW FIXED | | BN3 | 0.8 (80%) | ✅ NOW FIXED | | BN8 | 0.0 (0%) | ✅
+Formulas handles edge case | | Others | Varies | ✅ Dynamically calculated |
 
 **Recommendation**:
+
 - **With Formulas.exe**: 100% accurate in all BitNodes (RECOMMENDED)
 - **Without Formulas.exe**: Enhanced estimation works but may be slightly inaccurate in extreme BitNodes
 
 **How to Get Formulas.exe**:
+
 - Available from NeuroFlux Governor augmentation ($3 billion + 300 reputation with any faction)
 - Or: Use Singularity functions to purchase/install programmatically
 - Check availability: `ns.fileExists("Formulas.exe", "home")`
 
 **Impact**:
+
 - **Critical**: Fixes game-breaking bug in BitNode 2 and others
 - **Production-Ready**: Extensive testing confirms money/security now stable
 - **Performance**: No performance impact, actually more efficient with accurate ratios
@@ -180,9 +195,11 @@ if (!hasFormulas) {
 ### Fixed - smart-batcher.js
 
 **Updated Scripts**:
+
 - `batch/smart-batcher.js` - Fixed deployment attempts on servers with insufficient RAM
 
 **The Problem**:
+
 - Claude Code's PR improved RAM efficiency with weighted ratio-based calculation
 - However, the sophisticated calculation attempted deployments on servers with insufficient RAM
 - `Math.max(1, ...)` in the thread calculation (lines 243-245) forced at least 1 thread per script
@@ -192,6 +209,7 @@ if (!hasFormulas) {
 - Result: Multiple "ERROR: failed to start" messages on low-RAM servers
 
 **Example Failures**:
+
 ```bash
 # Server with 0 RAM - no pre-check to skip it
 darkweb: 0.00GB free => 3 threads => h1/g1/w1
@@ -208,18 +226,21 @@ ERROR: failed to start core/attack-hack.js on n00dles
 ```
 
 **Claude Code's PR Changes** (introduced the issue):
+
 - Replaced simple max-RAM calculation with sophisticated weighted ratio-based calculation
 - Used `ramPerScaleUnit = (hackRatio × hackRam) + (growRatio × growRam) + (weakenRatio × weakenRam)`
 - Added verification loop to handle edge cases from rounding and `Math.max(1, ...)`
 - More efficient RAM utilization but lacked pre-deployment validation
 
 **The Fix** (v1.8.16):
+
 - ✅ Added pre-check: Skip servers with RAM below minimum needed for any single script (line 234-239)
 - ✅ Added post-check: Verify final thread allocation doesn't exceed available RAM (line 268-271)
 - ✅ Enhanced error messages showing required vs available RAM
 - ✅ Prevents the sophisticated calculation from attempting impossible deployments
 
 **Technical Implementation**:
+
 ```javascript
 // Pre-check after RAM cost validation (line 234-239)
 const minRamNeeded = Math.max(hackRam, growRam, weakenRam);
@@ -236,6 +257,7 @@ if (hackThreads < 1 || growThreads < 1 || weakenThreads < 1 || totalRamNeeded > 
 ```
 
 **Result**:
+
 ```bash
 # Clean skips with no failed deployments
 darkweb: insufficient RAM (0.00GB < 1.75GB) - Skipping.
@@ -243,12 +265,14 @@ n00dles: insufficient RAM for minimum threads (need 5.20GB, have 4.00GB) - Skipp
 ```
 
 **Impact**:
+
 - ✅ Eliminates all "failed to start" errors on low-RAM servers
 - ✅ Clean, informative skip messages
 - ✅ Prevents partial deployments (some scripts succeed, others fail)
 - ✅ More professional output with proper validation
 
-**Resolves**: [GitHub Issue #5](https://github.com/r3c0n75/bitburner-scripts/issues/5) - smart-batcher thread count overshoots
+**Resolves**: [GitHub Issue #5](https://github.com/r3c0n75/bitburner-scripts/issues/5) - smart-batcher thread count
+overshoots
 
 **Credit**: Thanks to [@thomascury](https://github.com/thomascury) for reporting this issue!
 
@@ -261,15 +285,18 @@ n00dles: insufficient RAM for minimum threads (need 5.20GB, have 4.00GB) - Skipp
 **Issue Reported**: Two scripts were failing to download via `bitburner-update.js`
 
 **Root Causes**:
+
 1. `f-estimate-production.js` was listed under `utils/` category but file actually exists in `analysis/` folder
 2. `close-all-stock.js` was referenced with incorrect filename `stock-close-all.js`
 
 **Files Fixed**:
+
 - ✅ `scripts/bitburner-update.js` - Corrected file paths and categories
 - ✅ `bitburner-remote-api/src/bitburner-update.js` - Same fixes
 - ✅ `bitburner-remote-api/dist/bitburner-update.js` - Same fixes (compiled version)
 
 **Documentation Updated** (9 files):
+
 - ✅ `SCRIPT_REFERENCE.md` - Updated paths from `utils/` to `analysis/`
 - ✅ `FORMULAS_ENHANCED_SCRIPTS.md` - Updated all usage examples
 - ✅ `SCRIPTS_USING_FORMULAS.md` - Updated script location references
@@ -281,6 +308,7 @@ n00dles: insufficient RAM for minimum threads (need 5.20GB, have 4.00GB) - Skipp
 - ✅ `PURCHASABLE_PROGRAMS_GUIDE.md` - Updated references
 
 **Result**:
+
 ```bash
 # Before (FAILED):
 ✗ utils/f-estimate-production.js - Download failed
@@ -292,6 +320,7 @@ n00dles: insufficient RAM for minimum threads (need 5.20GB, have 4.00GB) - Skipp
 ```
 
 **Impact**:
+
 - Users can now successfully download all scripts via `bitburner-update.js --all`
 - All documentation consistently references correct paths and filenames
 - Zero breaking changes - existing users just need to re-run update script
@@ -303,22 +332,27 @@ n00dles: insufficient RAM for minimum threads (need 5.20GB, have 4.00GB) - Skipp
 ### Enhanced - share-ram.js
 
 **Updated Scripts**:
+
 - `utils/share-ram.js` - Optimized to use exactly 4.00GB RAM
 
 **The Problem**:
-- Original script used 4.05GB due to logging code (hostname tracking, runtime calculation, cycle counting, status prints)
+
+- Original script used 4.05GB due to logging code (hostname tracking, runtime calculation, cycle counting, status
+  prints)
 - Server RAM comes in multiples of 4GB (8GB, 16GB, 32GB, 64GB)
 - 4.05GB meant you could only run 1 instance on 8GB server (wasting ~3.95GB)
 - On 16GB server: only 3 instances fit (12.15GB used, 3.85GB wasted) instead of 4
 - Logging provided no actionable value - just informational stats
 
 **The Solution**:
+
 - ✅ Removed all logging code (hostname, timestamps, runtime tracking, cycle counting)
 - ✅ Script now uses **exactly 4.00GB RAM**
 - ✅ Kept essential functionality: `ns.share()` in infinite loop
 - ✅ Perfect memory utilization on all servers
 
 **Impact - Perfect RAM Utilization**:
+
 ```
 8GB server:   1 instance → 2 instances  (100% efficiency)
 16GB server:  3 instances → 4 instances  (33% more capacity)
@@ -327,18 +361,20 @@ n00dles: insufficient RAM for minimum threads (need 5.20GB, have 4.00GB) - Skipp
 ```
 
 **Benefits**:
+
 - 🎯 Zero RAM waste across your entire network
 - 📈 Up to 33% more faction reputation bonus capacity
 - 🧹 Cleaner logs (no unnecessary status messages)
 - ⚡ Marginally better performance (fewer operations)
 
-**Verification**:
-You can verify the script is running via:
+**Verification**: You can verify the script is running via:
+
 - Process list: `ps` or `run utils/list-procs.js`
 - Faction reputation multiplier in game UI
 - Server RAM usage display
 
-**Note**: If you need logging for debugging, you can still see when scripts start/stop via `deploy/deploy-share-all.js` output.
+**Note**: If you need logging for debugging, you can still see when scripts start/stop via `deploy/deploy-share-all.js`
+output.
 
 **Credit**: Thanks to GitHub user for identifying this optimization opportunity!
 
@@ -347,23 +383,28 @@ You can verify the script is running via:
 ### Fixed - smart-batcher.js & simple-batcher.js
 
 **Updated Scripts**:
+
 - `batch/smart-batcher.js` - Fixed RAM calculation to use maximum script RAM cost
 - `batch/simple-batcher.js` - Fixed RAM calculation to use maximum script RAM cost
 
 **The Problem**:
+
 - Script calculated available threads using only hack script RAM (1.7 GB)
 - Grow and weaken scripts actually use 1.75 GB
 - On 64GB servers: calculated 37.6 threads possible (64/1.7), but only 36.5 actually work (64/1.75)
-- On 8GB servers: could allocate 1 hack + 3 grow (4.7 threads) but weaken would fail (1.7+5.25=6.95, leaving only 1.05 GB for weaken needing 1.75 GB)
+- On 8GB servers: could allocate 1 hack + 3 grow (4.7 threads) but weaken would fail (1.7+5.25=6.95, leaving only 1.05
+  GB for weaken needing 1.75 GB)
 - Result: "insufficient ram" errors and scripts failing to start
 
 **The Fix**:
+
 - ✅ Now checks RAM cost of all three scripts (hack, grow, weaken)
 - ✅ Uses `Math.max(hackRam, growRam, weakenRam)` for thread calculations
 - ✅ Ensures accurate thread allocation that never exceeds available RAM
 - ✅ Prevents partial deployments where some scripts fail to start
 
 **Technical Details**:
+
 ```javascript
 // Old (broken):
 const ramPerThread = ns.getScriptRam(hackScript, h);
@@ -378,6 +419,7 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 ```
 
 **Impact**:
+
 - 64GB servers: Now correctly calculates 36 threads instead of 37
 - 8GB servers: Now correctly calculates 4 threads instead of 5, ensuring all scripts start
 - Eliminates "insufficient ram" errors
@@ -391,9 +433,11 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 ### Fixed - f-profit-scan-flex.js
 
 **Updated Script**:
+
 - `analysis/f-profit-scan-flex.js` - Fixed Formulas.exe ownership detection
 
 **The Problem**:
+
 - Script checked if `ns.formulas` API existed (which it always does)
 - Did NOT check if user actually owns Formulas.exe ($5 billion program)
 - When formulas called without ownership, threw runtime errors
@@ -401,6 +445,7 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 - Users saw empty results with no explanation
 
 **The Fix**:
+
 - ✅ Now uses `ns.fileExists("Formulas.exe", "home")` to verify actual ownership
 - ✅ Falls back to test call if fileExists unavailable
 - ✅ Displays clear, helpful error message if Formulas.exe not found
@@ -408,6 +453,7 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 - ✅ Added error logging in catch blocks for debugging
 
 **New Error Message**:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ERROR: This script requires Formulas.exe
@@ -421,18 +467,21 @@ Alternative: Use 'profit-scan-flex.js' for estimate-based analysis
 ```
 
 **Enhanced Error Handling**:
+
 - Player object validation before processing
 - Server object validation for formulas
 - Detailed error messages in catch blocks
 - Displays player hacking level on success
 
 **Documentation Updated**:
+
 - Enhanced script header with requirement details
 - Updated `docs/FORMULAS_ENHANCED_SCRIPTS.md` with requirement section
 - Updated `docs/SCRIPTS_USING_FORMULAS.md` with detection details
 - Clarified that API presence ≠ program ownership
 
 **Impact**:
+
 - Users without Formulas.exe get clear guidance instead of confusion
 - Proper direction to working alternative script
 - Better debugging when formulas fail
@@ -445,14 +494,17 @@ Alternative: Use 'profit-scan-flex.js' for estimate-based analysis
 ### Enhanced Script - Replace Purchased Servers
 
 **Updated Script**:
+
 - `deploy/replace-pservs-no-copy.js` - Updated completion message to reflect auto-detection
 
 **Key Change**:
+
 - **Improved messaging** - Now correctly states that batch-manager auto-detects upgraded servers
 - **Less urgent tone** - Manual restart only needed if auto-detection doesn't work
 - **Better UX** - Clearer expectations about what happens after upgrade
 
 **Old Message**:
+
 ```
 ⚠️  IMPORTANT: Restart your batch system to use the new RAM!
   1. Kill all processes: run utils/global-kill.js
@@ -460,6 +512,7 @@ Alternative: Use 'profit-scan-flex.js' for estimate-based analysis
 ```
 
 **New Message**:
+
 ```
 ✓ Batch-manager should auto-detect the upgraded servers on its next cycle.
   If it doesn't restart automatically, you can manually restart:
@@ -468,11 +521,13 @@ Alternative: Use 'profit-scan-flex.js' for estimate-based analysis
 ```
 
 **Why This Matters**:
+
 - **Accurate information** - Reflects v1.8.9+ instant RAM detection capabilities
 - **Reduced confusion** - Users know auto-detection is expected behavior
 - **Helpful fallback** - Manual restart instructions still provided if needed
 
 **Documentation Updated**:
+
 - `docs/SCRIPT_REFERENCE.md` - Updated upgrade process section
 - `docs/QUICK_REFERENCE.md` - Updated upgrade commands section
 
@@ -483,24 +538,29 @@ Alternative: Use 'profit-scan-flex.js' for estimate-based analysis
 ### Enhanced Script - Batch Manager
 
 **Updated Script**:
+
 - `batch/batch-manager.js` - Enhanced RAM upgrade reporting with per-server breakdown
 
 **Key Enhancement**:
+
 - **Detailed RAM reporting** - Shows both total increase AND current size per server
 - **Clear upgrade visibility** - Immediately understand what changed and current capacity
 
 **What You'll See**:
+
 ```
 ✓ Network RAM changed: 13476GB → 19876GB (+6400GB)
   Estimated: 25 purchased servers (~256GB increase each, now ~512GB per server)
 ```
 
 **Why This Matters**:
+
 - **Clarity**: Instantly see both the upgrade amount (256GB) and new size (512GB)
 - **Transparency**: No confusion about whether numbers show increase or total
 - **Planning**: Easy to track your progression and next upgrade targets
 
 **Technical Implementation**:
+
 - Calculates total RAM across all purchased servers
 - Divides by server count for accurate per-server average
 - Shows both the delta (increase) and current state (new size)
@@ -512,25 +572,30 @@ Alternative: Use 'profit-scan-flex.js' for estimate-based analysis
 ### Enhanced Script - Batch Manager
 
 **Updated Script**:
+
 - `batch/batch-manager.js` - Instant RAM upgrade detection (every cycle)
 
 **Major Performance Improvement**:
+
 - **RAM checks every cycle** (~85s) instead of every 10 cycles (~14 min)
 - **Instant upgrade detection** - No more waiting up to 14 minutes
 - **Smart separation** - Quick RAM checks (cheap) + periodic rooting scans (expensive)
 
 **Key Features**:
+
 - ⚡ **85-second detection** - Upgrades detected at next cycle
 - 🔄 **Automatic redeployment** - Immediate smart-batcher restart
 - 📊 **Per-server breakdown** - Shows exactly what changed
 - 🎯 **Smart monitoring** - RAM every cycle, rooting every 10 cycles
 
 **Before vs After**:
+
 - **Before**: Wait up to 14 minutes for RAM upgrade detection
 - **After**: Detection within 85 seconds (next cycle)
 - **Improvement**: 14x faster upgrade response time
 
 **What You'll See**:
+
 ```
 [Cycle 2] Waiting... (next scan in 8 cycles)
 ✓ Network RAM changed: 8676GB → 10276GB (+1600GB)
@@ -540,6 +605,7 @@ Deploying batch/smart-batcher.js on home...
 ```
 
 **Technical Changes**:
+
 - Moved RAM calculation to every cycle (was only during rooting scans)
 - Quick `getTotalNetworkRAM()` check before expensive network scan
 - Triggers immediate redeployment when RAM increases detected
@@ -552,9 +618,11 @@ Deploying batch/smart-batcher.js on home...
 ### Enhanced Script - Batch Manager
 
 **Updated Script**:
+
 - `batch/batch-manager.js` - Complete logging overhaul with LOG window support
 
 **Major Features Added**:
+
 - ✅ **LOG window support** - All messages appear in script log (click LOG button)
 - ✅ **Startup banner** - Clear visual indication of script start and configuration
 - ✅ **Heartbeat messages** - Activity updates every cycle (long intervals) or every 5 cycles
@@ -563,12 +631,14 @@ Deploying batch/smart-batcher.js on home...
 - ✅ **Smart logging** - Important messages always visible, info respects quiet mode
 
 **Logging Enhancements**:
+
 - All messages go to LOG window (via `ns.print()`)
 - Important messages also go to terminal (via `ns.tprint()`)
 - Quiet mode suppresses terminal spam while keeping log window updated
 - Clean output with proper categorization (info, important, warnings, errors)
 
 **New Output Features**:
+
 ```
 ============================================================
 BATCH MANAGER v1.8.8 - Starting...
@@ -584,20 +654,22 @@ Total network RAM: 8676GB across rooted servers
 ```
 
 **Heartbeat System**:
+
 - Shows activity every cycle for long intervals (>60s)
 - Shows activity every 5 cycles for short intervals (<60s)
 - Countdown to next scan: "next scan in 7 cycles"
 - Clear monitoring status throughout execution
 
 **RAM Upgrade Detection**:
+
 ```
 ✓ Network RAM changed: 8676GB → 10276GB (+1600GB)
 Network changes detected - killing existing batcher to redeploy...
 ✓ Deployed batch/smart-batcher.js on home (pid=1169)
 ```
 
-**API Call Silencing**:
-Disabled logging for 23 API calls to eliminate log spam:
+**API Call Silencing**: Disabled logging for 23 API calls to eliminate log spam:
+
 - Network operations: `scan`, `ps`, `kill`, `scp`
 - Server info: `getServerMaxRam`, `getServerUsedRam`, `getScriptRam`
 - Rooting: `brutessh`, `ftpcrack`, `relaysmtp`, `httpworm`, `sqlinject`, `nuke`
@@ -607,12 +679,14 @@ Disabled logging for 23 API calls to eliminate log spam:
 - Misc: `sleep`
 
 **Why This Matters**:
+
 - **Visibility**: Always know what the script is doing
 - **Debugging**: Easy to track issues via LOG window
 - **Automation**: Automatically handles server upgrades
 - **Clean logs**: No API call spam, just meaningful updates
 
 **Technical Implementation**:
+
 - Three-tier logging system (info, important, error)
 - `info()`: LOG window + optional terminal
 - `important()`: Both LOG window and terminal
@@ -627,18 +701,21 @@ Disabled logging for 23 API calls to eliminate log spam:
 ### Enhanced Script - Smart Batcher
 
 **Updated Script**:
+
 - `batch/smart-batcher.js` - v3.0.0 game compatibility fix
 
-**Breaking Change Resolved**:
-Fixed `formatNumber: Function removed in 3.0.0` error that caused script failure in Bitburner v3.0.0.
+**Breaking Change Resolved**: Fixed `formatNumber: Function removed in 3.0.0` error that caused script failure in
+Bitburner v3.0.0.
 
 **Key Changes**:
+
 - ✅ **Added compatibility helper function** - Works in both v2.8.1 and v3.0.0
 - ✅ **Replaced 4 instances** of deprecated `ns.formatNumber()` calls
 - ✅ **Three-tier fallback system**: `ns.format.number()` (v3.x) → `ns.formatNumber()` (v2.x) → manual formatting
 - ✅ **Zero behavior changes** - Same output, now compatible across game versions
 
 **Technical Implementation**:
+
 ```javascript
 function formatNumber(ns, v) {
   // Try new format.number (v3.x) first
@@ -649,31 +726,31 @@ function formatNumber(ns, v) {
   } catch (e) {
     // Fall through to old method
   }
-  
+
   // Try old formatNumber (v2.x)
   try {
     return ns.formatNumber(v, 2);
   } catch (e) {
     // Manual fallback if both methods fail
-    if (v >= 1e9) return `$${(v/1e9).toFixed(2)}b`;
-    if (v >= 1e6) return `$${(v/1e6).toFixed(2)}m`;
-    if (v >= 1e3) return `$${(v/1e3).toFixed(2)}k`;
+    if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}b`;
+    if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}m`;
+    if (v >= 1e3) return `$${(v / 1e3).toFixed(2)}k`;
     return `$${v.toFixed(2)}`;
   }
 }
 ```
 
 **Affected Output Lines**:
+
 - Money per hack thread display
 - Income rate per second
 - Income rate per minute
 - Income rate per hour
 
-**Testing**:
-✅ Confirmed working in Bitburner v3.0.0
-✅ Backward compatible with v2.8.1
+**Testing**: ✅ Confirmed working in Bitburner v3.0.0 ✅ Backward compatible with v2.8.1
 
 **Usage** (unchanged):
+
 ```bash
 run batch/smart-batcher.js joesguns
 run batch/smart-batcher.js joesguns 0.05 --quiet
@@ -688,23 +765,27 @@ run batch/smart-batcher.js joesguns 0.05 --quiet
 ### Enhanced Script - Global Kill
 
 **Updated Script**:
+
 - `utils/global-kill.js` - Major reliability enhancement for killing all processes
 
 **Key Improvements**:
+
 - **Uses `ns.killall()` for bulk operations** - More efficient and reliable than individual process kills
 - **Strategic delays** - 50ms delay after each server's processes are killed to ensure proper processing
 - **Smart execution order** - Processes all remote servers first, saves current host for last
 - **Double self-kill protection** - Checks both filename AND process ID to prevent premature termination
 - **Better feedback** - Clear ✓ indicator with total processes killed and servers processed
 
-**Why This Matters**:
-The original version had timing issues that caused some processes to survive the kill command. The enhanced version:
+**Why This Matters**: The original version had timing issues that caused some processes to survive the kill command. The
+enhanced version:
+
 - Eliminates race conditions with strategic delays
 - Prevents self-termination during execution
 - Provides 100% reliable process termination across entire network
 - Gives clear feedback about what was killed
 
 **Technical Changes**:
+
 ```javascript
 // OLD: Individual kills with no delays
 for (const proc of procs) {
@@ -719,11 +800,13 @@ await ns.sleep(50); // Ensure kills are processed
 ```
 
 **Usage** (unchanged):
+
 ```bash
 run utils/global-kill.js
 ```
 
 **Results**:
+
 - 100% reliable process termination
 - No more surviving processes after execution
 - Clear status reporting
@@ -735,9 +818,11 @@ run utils/global-kill.js
 ### New Script - Close All Positions
 
 **New Script**:
+
 - `stocks/stock-close-all.js` - Instantly liquidate entire stock portfolio
 
 **Key Features**:
+
 - **Preview Mode**: Shows what would be sold without executing (default behavior)
 - **Safety Mechanism**: Requires --confirm flag to actually close positions
 - **Comprehensive Analysis**: Displays P/L for each position before closing
@@ -747,6 +832,7 @@ run utils/global-kill.js
 - **Commission-Aware**: Includes $100k transaction fees in P/L calculations
 
 **Example Usage**:
+
 ```bash
 # Preview liquidation (safe - no execution)
 run stocks/stock-close-all.js
@@ -756,6 +842,7 @@ run stocks/stock-close-all.js --confirm
 ```
 
 **Display Example**:
+
 ```
 Found 15 position(s) to close:
 ✓ NVMD LONG: 82.9k shares @ $24.1k → $27.7k
@@ -767,6 +854,7 @@ Win Rate: 80.0%
 ```
 
 **Best For**:
+
 - Taking profits at end of session
 - Emergency portfolio liquidation
 - Strategy rebalancing
@@ -774,6 +862,7 @@ Win Rate: 80.0%
 - Quick exit during market crashes
 
 **Safety Features**:
+
 - Preview-first design prevents accidents
 - Clear profit/loss breakdown for informed decisions
 - Win rate helps evaluate strategy effectiveness
@@ -786,9 +875,11 @@ Win Rate: 80.0%
 ### Enhanced - Complete Profit/Loss Visibility
 
 **Enhanced Script**:
+
 - `stocks/stock-monitor.js` - Added comprehensive realized P/L tracking
 
 **Key Features**:
+
 - **Realized P/L Tracking**: Automatically detects when positions are closed and calculates locked-in profits
 - **Real-Time Notifications**: Shows "[REALIZED]" messages when positions close with profit/return details
 - **Total P/L Display**: Combines unrealized (open positions) + realized (closed positions) for complete view
@@ -796,6 +887,7 @@ Win Rate: 80.0%
 - **Visual Indicators**: ✓ for gains, ✗ for losses on realized profits
 
 **Enhanced Display**:
+
 ```
 ──────────────────────────────────────────────────────
 Unrealized P/L: $42.3m (+14.7%)
@@ -805,12 +897,14 @@ Session Return: +12.4%
 ```
 
 **Benefits**:
+
 - **Complete Picture**: See both open position gains AND locked-in profits
 - **Trading Performance**: Track actual money made from closed trades
 - **Session Analysis**: Understand total trading success across all activity
 - **Smart Indicators**: Quick visual confirmation of profitable vs losing trades
 
-**Use Case**: Monitor automated traders to see both current portfolio performance and actual realized gains from completed trades throughout the session.
+**Use Case**: Monitor automated traders to see both current portfolio performance and actual realized gains from
+completed trades throughout the session.
 
 ---
 
@@ -819,9 +913,11 @@ Session Return: +12.4%
 ### Enhanced - Real-Time Portfolio Intelligence
 
 **Enhanced Script**:
+
 - `stocks/stock-monitor.js` - Enhanced with comprehensive 4S Market Data integration
 
 **Key Features**:
+
 - **Real-Time Forecast Display**: Shows live forecast direction and strength for every position
 - **Position Alignment Indicators**: ✓ = position matches forecast, ⚠ = contradicts forecast (danger!)
 - **Volatility Analysis**: HIGH/MED/LOW risk levels with percentages for every holding
@@ -830,6 +926,7 @@ Session Return: +12.4%
 - **Backward Compatible**: Works perfectly with just TIX API ($5 billion)
 
 **Enhanced Display (with 4S Data)**:
+
 ```
 Symbol Type    Shares    Entry    Current        P/L   Return   Forecast   Volatility
 ──────────────────────────────────────────────────────────────────────────────────────────
@@ -839,6 +936,7 @@ OMGA   LONG      1.6k    $2.0k      $2.0k    -$85.2k    -2.6%     ↓45% ⚠   1
 ```
 
 **Intelligence Features**:
+
 - **Forecast Column**: Shows direction (↑↓→) and percentage with alignment indicator
   - ✓ = Position aligns with forecast (good!)
   - ⚠ = Position contradicts forecast (may need to exit!)
@@ -849,6 +947,7 @@ OMGA   LONG      1.6k    $2.0k      $2.0k    -$85.2k    -2.6%     ↓45% ⚠   1
 - **4S Status Header**: Shows "[4S Market Data: ACTIVE]" when enabled
 
 **Benefits**:
+
 - **Instant Risk Assessment**: See which positions are risky at a glance
 - **Exit Signal Detection**: ⚠ indicators warn when forecasts turn against you
 - **Smarter Holding Decisions**: Hold strong forecasts, exit weak ones
@@ -856,6 +955,7 @@ OMGA   LONG      1.6k    $2.0k      $2.0k    -$85.2k    -2.6%     ↓45% ⚠   1
 - **Complete Intelligence**: All critical data in one compact view
 
 **Before/After**:
+
 ```
 BEFORE (2 lines per position):
 CTYS   LONG    484.6k   $412.5     $543.5     $63.5m   +31.8%
@@ -866,16 +966,19 @@ CTYS   LONG    484.6k   $412.5     $543.5     $63.5m   +31.8%     ↑57% ✓   1
 ```
 
 **Requirements**:
+
 - TIX API Access ($5 billion) - Required
 - 4S Market Data TIX API ($1 billion) - Optional for enhanced features
 
 **Usage**:
+
 ```bash
 run stocks/stock-monitor.js [refresh-rate-ms]
 run stocks/stock-monitor.js 3000  # 3-second updates
 ```
 
 **Files Updated**:
+
 - `bitburner-remote-api/src/stocks/stock-monitor.js`
 - `scripts/stocks/stock-monitor.js`
 
@@ -884,9 +987,11 @@ run stocks/stock-monitor.js 3000  # 3-second updates
 ### Enhanced - Forecast Intelligence Integration
 
 **Enhanced Script**:
+
 - `stocks/stock-momentum-analyzer.js` - Added optional 4S Market Data integration for forecast validation
 
 **Key Features**:
+
 - **Auto-Detection**: Automatically detects if you have 4S Market Data ($1 billion)
 - **Forecast Alignment Analysis**: Shows whether momentum confirms or contradicts forecast
 - **Confidence Scoring**: HIGH/MEDIUM/LOW based on momentum + forecast agreement
@@ -895,6 +1000,7 @@ run stocks/stock-monitor.js 3000  # 3-second updates
 - **Backward Compatible**: Works perfectly without 4S Data (momentum-only analysis)
 
 **Enhanced Display (with 4S Data)**:
+
 ```
 OMTK @ $68.61k | Momentum: 3↑ 1↓ | Change: +0.21%
        📊 Forecast: 65% ↑ | Alignment: ✅ CONFIRMS | Confidence: 🟡 MEDIUM
@@ -904,11 +1010,13 @@ OMGA @ $2.11k  | Momentum: 4↑ 0↓ | Change: +0.64%
 ```
 
 **Confidence Scoring System**:
+
 - **🟢 HIGH**: Strong momentum (4+) + Strong forecast (65%+) = Both strongly agree
 - **🟡 MEDIUM**: Good momentum (3+) + Good forecast (58%+) = Both agree
 - **🔴 LOW**: Momentum contradicts forecast = **TRAP WARNING** (don't buy!)
 
 **Why This Matters**:
+
 - **Prevents Trap Trades**: See when momentum is misleading (stock about to reverse)
 - **Validates Signals**: Confirms which momentum signals are backed by real forecast data
 - **Improves Success Rate**: Only trade HIGH/MEDIUM confidence opportunities
@@ -916,6 +1024,7 @@ OMGA @ $2.11k  | Momentum: 4↑ 0↓ | Change: +0.64%
 - **Source Code Validated**: Game uses real forecasts that drive price changes (randomized timing)
 
 **Real-World Example** (from user testing):
+
 ```
 Without Enhancement: 8 momentum signals → Would buy all 8 stocks
 With Enhancement: 0 HIGH, 1 MEDIUM, 7 LOW confidence
@@ -923,6 +1032,7 @@ Result: Prevented 7 trap trades (87.5% failure rate avoided!)
 ```
 
 **Usage**:
+
 ```bash
 # Works with or without 4S Data (auto-detects)
 run stocks/stock-momentum-analyzer.js 5
@@ -932,10 +1042,12 @@ run stocks/stock-momentum-analyzer.js 10
 ```
 
 **Requirements**:
+
 - TIX API Access ($5 billion) - REQUIRED
 - 4S Market Data ($1 billion) - OPTIONAL (but highly recommended for validation)
 
 **Technical Implementation**:
+
 - Calculates forecast alignment (momentum direction vs forecast direction)
 - Scores confidence based on strength of both indicators
 - Sorts recommendations by confidence level (HIGH → MEDIUM → LOW)
@@ -943,12 +1055,14 @@ run stocks/stock-momentum-analyzer.js 10
 - Gracefully falls back to momentum-only if 4S Data unavailable
 
 **Updated Files**:
+
 - Enhanced: `bitburner-remote-api/src/stocks/stock-momentum-analyzer.js`
 - Enhanced: `scripts/stocks/stock-momentum-analyzer.js`
 - Updated: `docs/STOCK_TRADING_GUIDE.md` (documented 4S Data integration)
 - Updated: `CHANGELOG.md` (this entry)
 
-**Impact**: This enhancement transforms the momentum analyzer from a simple preview tool into an intelligent trading decision system that validates momentum signals against forecast data, dramatically reducing false positive trades.
+**Impact**: This enhancement transforms the momentum analyzer from a simple preview tool into an intelligent trading
+decision system that validates momentum signals against forecast data, dramatically reducing false positive trades.
 
 ---
 
@@ -957,10 +1071,12 @@ run stocks/stock-momentum-analyzer.js 10
 ### Added - Momentum Trading Without 4S Data
 
 **New Scripts** (2 total):
+
 - `stocks/stock-trader-momentum.js` - Momentum trading without 4S Market Data requirement
 - `stocks/stock-momentum-analyzer.js` - Preview momentum analysis before trading
 
 **Key Features**:
+
 - **No 4S Data Required**: Only needs TIX API! Uses price history tracking instead of forecasts
 - **Momentum Strategy**: Buy stocks on rallies (positive momentum), hold until profit target or stop loss
 - **Profit Target Parameter**: User-configurable profit target (e.g., 0.03 = 3%, 0.05 = 5%, 0.10 = 10%)
@@ -971,6 +1087,7 @@ run stocks/stock-momentum-analyzer.js 10
 - **Preview Mode**: Analyze momentum without risking capital
 
 **Usage Examples**:
+
 ```bash
 # Conservative: 5 stocks, $1b capital, 5% profit target, 5% stop loss
 run stocks/stock-trader-momentum.js 5 1000000000 0.05 0.05 6000
@@ -986,6 +1103,7 @@ run stocks/stock-momentum-analyzer.js 5
 ```
 
 **Parameters**:
+
 - `max-stocks`: Maximum number of different stocks to buy (e.g., 5, 10)
 - `total-capital`: Total money to invest across ALL stocks (e.g., 1000000000 = $1b)
 - `profit-target`: Profit % to auto-sell at (e.g., 0.03 = 3%, 0.05 = 5%, 0.10 = 10%)
@@ -993,6 +1111,7 @@ run stocks/stock-momentum-analyzer.js 5
 - `refresh-rate-ms`: How often to check market (default: 6000 = 6 seconds)
 
 **Strategy (MOMENTUM with RISK MANAGEMENT)**:
+
 - Track price changes over last 5 cycles (30 seconds)
 - Buy when 4+ POSITIVE price movements detected (riding the rally)
 - Sell ONLY when profit target reached OR stop loss triggered
@@ -1001,11 +1120,13 @@ run stocks/stock-momentum-analyzer.js 5
 - Skip stocks with >3% price swings (too volatile)
 
 **Cost Savings**:
+
 - **Without 4S Data**: Only need TIX API ($5 billion) vs $6 billion for forecast-based
 - **Alternative Strategy**: When you can't afford or don't want to buy 4S Market Data
 - **Lower Barrier**: Start automated trading earlier in game progression
 
 **Performance**:
+
 - Results vary based on market conditions
 - Momentum strategy: Ride rallies, hold for profit target
 - Profit targets lock in gains automatically
@@ -1014,6 +1135,7 @@ run stocks/stock-momentum-analyzer.js 5
 - Works in any market (no forecast dependency)
 
 **Best For**:
+
 - Players without 4S Market Data
 - Early-game automated trading
 - Momentum trading philosophy
@@ -1021,6 +1143,7 @@ run stocks/stock-momentum-analyzer.js 5
 - Trend-following with defined exits
 
 **Updated Files**:
+
 - Added: `bitburner-remote-api/src/stocks/stock-trader-momentum.js`
 - Added: `bitburner-remote-api/src/stocks/stock-momentum-analyzer.js`
 - Added: `scripts/stocks/stock-trader-momentum.js`
@@ -1036,21 +1159,25 @@ run stocks/stock-momentum-analyzer.js 5
 ### Added - Complete Automated Stock Trading System
 
 **New Scripts** (4 total):
+
 - `stocks/stock-info.js` - Market intelligence and portfolio viewing
 - `stocks/stock-trader-basic.js` - Simple automated trading (20-50% daily returns)
 - `stocks/stock-trader-advanced.js` - Advanced trading with dynamic sizing (30-80% daily returns)
 - `stocks/stock-monitor.js` - Real-time portfolio monitoring dashboard
 
 **New Documentation** (2 files):
+
 - `docs/STOCK_TRADING_GUIDE.md` - 700+ line comprehensive trading guide
 - `STOCK_TRADING_IMPLEMENTATION.md` - Technical implementation details
 
 **Updated Files**:
+
 - `QUICK_REFERENCE.md` - Added stock trading commands section
 - `bitburner-update.js` - Added `--stocks` flag for downloading trading scripts
 - `README.md` - Updated with stock trading quick start guide
 
 **Features**:
+
 - Automated buying/selling based on forecasts
 - Long positions (short positions version-dependent)
 - Dynamic position sizing
@@ -1060,6 +1187,7 @@ run stocks/stock-momentum-analyzer.js 5
 - Performance tracking
 
 **Prerequisites**:
+
 - TIX API Access: $5 billion (required)
 - 4S Market Data TIX API: $1 billion (highly recommended)
 
@@ -1074,6 +1202,7 @@ run stocks/stock-momentum-analyzer.js 5
 **Fixed critical flaw in `--optimal` mode that ranked low-capacity servers too high!**
 
 **The Problem**:
+
 - Original optimal mode ranked by per-thread income only
 - Favored fast cycle/low max money servers (sigma-cosmetics: $57.5m)
 - Ignored max money capacity (silver-helix: $1.13 BILLION)
@@ -1081,42 +1210,48 @@ run stocks/stock-momentum-analyzer.js 5
 - User experience: sigma-cosmetics produced $1.57m/s vs silver-helix's $3.41m/s (2.2x worse!)
 
 **The Solution - Fleet Potential Score**:
+
 ```
 Fleet Score = Per-thread income × log10(Max Money)
 ```
 
 This formula:
+
 - ✅ Rewards BOTH per-thread efficiency AND max money capacity
 - ✅ Uses logarithmic scale so high-capacity doesn't completely dominate
 - ✅ Ranks targets properly for large server fleets
 - ✅ Identifies targets that can support 100-2000 threads
 
 **Real-World Results**:
+
 ```
 OLD Rankings (broken):          NEW Rankings (fixed):
 1. sigma-cosmetics  30.73k/s    1. silver-helix     155k score ($1.13b)
    Max: $57.5m                     Max: $1.13b ⭐
-   
+
 2. phantasy         21.93k/s    2. omega-net        140k score ($1.59b)
    Max: $600m                      Max: $1.59b ⭐
-   
+
 3. silver-helix     17.39k/s    3. the-hub          111k score ($4.55b)
    Max: $1.13b ⭐                  Max: $4.55b ⭐
 ```
 
 **New Display**:
+
 - Shows Fleet Score prominently
 - ⭐ marker emphasizes max money importance
 - Explains formula in footer
 - Per-thread income still visible but not primary ranking
 
 **Benefits**:
+
 - 🎯 Correctly identifies high-capacity targets for large fleets
 - 💰 Maximizes actual production (not theoretical per-thread)
 - 📊 Prevents target saturation issues
 - 🚀 Ranks silver-helix properly (where it belongs!)
 
 **Updated Files**:
+
 - Fixed: `bitburner-remote-api/src/analysis/profit-scan-flex.js`
 - Fixed: `scripts/analysis/profit-scan-flex.js`
 
@@ -1129,24 +1264,29 @@ OLD Rankings (broken):          NEW Rankings (fixed):
 **Added `--optimal` flag to rank servers by POTENTIAL instead of current degraded state!**
 
 **The Discovery**:
+
 - User targeted `silver-helix` despite it ranking low in current state
 - After smart-batcher prep: $34k/s → $3.41m/s (100x improvement!)
 - Root cause: Current rankings misleading due to high security degradation
 - Solution: New `--optimal` mode shows potential at min security
 
 **New Features**:
+
 1. **Optimal Mode (`--optimal` flag)**:
+
    - Ranks by POTENTIAL (min security, max money)
    - Calculates optimal timing and hack chance at min security
    - Shows improvement percentage for servers needing prep
    - Example: "Current: $9.70k/s (217% gain possible)"
 
 2. **Prep Status Indicators**:
+
    - ✓ READY - At/near min security, farm immediately
    - ◐ LIGHT PREP - Needs weakening (Δ security > 50% of min)
    - ⚠ HEAVY PREP - Needs significant prep (Δ security > 200% of min)
 
 3. **Dual-Mode Display**:
+
    - Current mode (default): Shows as-is state with potential hints
    - Optimal mode (`--optimal`): Rankings by potential with prep requirements
    - Both modes show batch-cycle-aware realistic estimates
@@ -1157,6 +1297,7 @@ OLD Rankings (broken):          NEW Rankings (fixed):
    - Security delta displayed: "Security: 10.0/3 (Δ7.0)"
 
 **Real-World Example**:
+
 ```
 Current Rankings:           Optimal Rankings:
 1. silver-helix 16.91k/s    1. sigma-cosmetics 30.73k/s (217% gain!)
@@ -1166,6 +1307,7 @@ Current Rankings:           Optimal Rankings:
 ```
 
 **Usage**:
+
 ```bash
 # See current state rankings (default)
 run analysis/profit-scan-flex.js
@@ -1181,6 +1323,7 @@ run analysis/profit-scan-flex.js --optimal --all --save
 ```
 
 **Benefits**:
+
 - 🎯 Find "diamond in the rough" targets like silver-helix
 - 📊 Understand why some servers perform poorly (high security)
 - 🚀 Identify servers with massive gain potential (500%+ improvements)
@@ -1188,37 +1331,44 @@ run analysis/profit-scan-flex.js --optimal --all --save
 - 🔍 Discover hidden gems that appear low in current rankings
 
 **Updated Files**:
+
 - Enhanced: `bitburner-remote-api/src/analysis/profit-scan-flex.js`
 - Enhanced: `scripts/analysis/profit-scan-flex.js`
 
 ## [1.5.1] - 2025-10-26 - Batch Manager Smart Upgrade ⚡
 
 ### CHANGED - batch-manager.js
+
 **Upgraded to deploy smart-batcher.js instead of simple-batcher.js!**
 
 **Breaking Change**:
+
 - Parameter change: `capPerHost` → `hackPercent`
 - Old: `run batch-manager.js joesguns 12 1.25 home --quiet` (capPerHost=12)
 - New: `run batch-manager.js joesguns 0.05 1.25 home --quiet` (hackPercent=0.05 = 5%)
 
 **Benefits**:
+
 - 🚀 Automatically deploys 490x more efficient smart-batcher
 - 💰 Leverages optimal timing-based thread ratios (4% hack / 87% grow / 9% weaken)
 - ⚡ 3-4x faster server preparation
 - 📊 Inherits all smart-batcher intelligence (timing analysis, production estimates)
 
 **Intelligent Quiet Mode** 🤫:
+
 - Shows full smart-batcher output on initial deployment
 - Then stays silent until new servers are rooted
 - Only redeploys when new servers discovered (not every cycle)
 - Perfect for long-term automated management
 
 **Migration**:
+
 - Replace second parameter with hack percentage (0.01-1.0, recommended: 0.05)
 - Default behavior maintains 5% hack rate when parameter omitted
 - All flags (--quiet, --no-root) remain unchanged
 
 **Updated Usage**:
+
 ```bash
 run batch-manager.js joesguns 0.05 1.25 home --quiet  # 5% hack rate
 run batch-manager.js joesguns --quiet                 # Uses default 5% hack
@@ -1232,18 +1382,21 @@ run batch-manager.js --quiet --no-root                # Disable auto-rooting
 **Revolutionary batch deployment system with timing-based optimal thread ratios!**
 
 **Performance Achievement**:
+
 - 🚀 **490x improvement** over basic batching ($4k/s → $2.09m/s)
 - 💰 **$2.09 million/second** sustained production
 - 🏦 **$7.5 billion/hour** income rate
 - ⚡ **Production-ready in 6-8 minutes** (vs 15-20 minutes with old method)
 
 **Key Innovation - Timing-Based Thread Ratios**:
+
 ```
 Traditional approach: 25% hack / 45% grow / 30% weaken (inefficient)
 Smart approach:        4% hack / 87% grow /  9% weaken (optimal)
 ```
 
 **How It Works**:
+
 1. Analyzes target server timing (hack/grow/weaken duration)
 2. Calculates optimal ratios based on security mechanics
 3. Allocates threads proportionally to operation duration
@@ -1251,6 +1404,7 @@ Smart approach:        4% hack / 87% grow /  9% weaken (optimal)
 5. Uses minimal hack threads for maximum efficiency
 
 **Features**:
+
 - 📊 **Intelligent Ratio Calculator**: Based on security impact (0.002/0.004/0.05)
 - ⚖️ **Timing Analysis**: Calculates batch window and efficiency
 - 💰 **Production Estimates**: Shows expected income after prep
@@ -1258,6 +1412,7 @@ Smart approach:        4% hack / 87% grow /  9% weaken (optimal)
 - 📈 **Beautiful Output**: Professional formatted deployment summary
 
 **Usage**:
+
 ```bash
 run batch/smart-batcher.js joesguns              # Deploy with optimal ratios
 run batch/smart-batcher.js joesguns 0.10         # Hack 10% per batch
@@ -1267,6 +1422,7 @@ run batch/smart-batcher.js joesguns --include-home  # Include home server
 ```
 
 **Results (Real Testing)**:
+
 - Deployed across 56 servers
 - 1304 total threads (45 hack / 1119 grow / 140 weaken)
 - Thread ratios: 3.5% / 85.8% / 10.7% (near-perfect match to target 4.3% / 87.0% / 8.7%)
@@ -1278,17 +1434,20 @@ run batch/smart-batcher.js joesguns --include-home  # Include home server
 **Fixed misleading production estimates with batch-cycle-aware calculations!**
 
 **The Problem**:
+
 - Old calculation: `money / hackTime` (assumes continuous hacking)
 - Showed $45.85k/s but actual was only $4.26k/s (10x off!)
 - Didn't account for grow/weaken cycle time
 
 **The Solution**:
+
 - New calculation: `money / (max(hackTime, growTime, weakenTime) * 1.25)`
 - Shows realistic batch cycle rates
 - Accounts for grow/weaken overhead
 - Displays batch efficiency (typically 20%)
 
 **New Information Displayed**:
+
 ```
 === Batch Cycle Analysis ===
 Batch Cycle Time: 22.32s
@@ -1307,6 +1466,7 @@ Batch efficiency: 20.0%
 ```
 
 **Benefits**:
+
 - ✅ Estimates now match actual measured production
 - ✅ Shows server prep status (current money %)
 - ✅ Calculates realistic batches per minute
@@ -1318,6 +1478,7 @@ Batch efficiency: 20.0%
 **Fixed profit calculations to use realistic batch cycles!**
 
 **Changes**:
+
 - Updated to use same batch-cycle-aware calculation as estimate-production.js
 - Ranks servers by realistic income potential (not theoretical continuous hack)
 - Income estimates now ~20% of previous (realistic vs idealized)
@@ -1327,6 +1488,7 @@ Batch efficiency: 20.0%
 **After**: `foodnstuff: 9.96k/s` (realistic with batch overhead)
 
 **Usage** (unchanged):
+
 ```bash
 run analysis/profit-scan-flex.js        # Show top targets
 run analysis/profit-scan-flex.js 50     # Show top 50
@@ -1336,12 +1498,14 @@ run analysis/profit-scan-flex.js --save # Save timing data
 ### Impact & Recommendations
 
 **Migration Path**:
+
 1. Use `profit-scan-flex.js` to find best target (now shows realistic rates)
 2. Use `estimate-production.js` to calculate expected production
 3. Deploy with `smart-batcher.js` for optimal performance
 4. Monitor with `production-monitor.js` to verify results
 
 **Performance Comparison**:
+
 ```
 simple-batcher.js:  $4.26k/s  (basic ratio allocation)
 smart-batcher.js:   $2.09m/s  (timing-optimized ratios)
@@ -1349,6 +1513,7 @@ Improvement:        490x faster, $7.5B/hour
 ```
 
 **Why Smart-Batcher Works**:
+
 - Grow operations take 3-4x longer than hack
 - Need proportionally more grow threads to maintain balance
 - 87% grow allocation enables exponential money growth
@@ -1357,6 +1522,7 @@ Improvement:        490x faster, $7.5B/hour
 - Uses only 4% hack threads (all that's needed when server is full)
 
 **Files Modified**:
+
 - Added: `bitburner-remote-api/src/batch/smart-batcher.js`
 - Added: `scripts/batch/smart-batcher.js`
 - Enhanced: `bitburner-remote-api/src/utils/estimate-production.js`
@@ -1367,10 +1533,10 @@ Improvement:        490x faster, $7.5B/hour
 ## [1.4.4] - 2025-10-26 - Script Organization & Enhanced Error Handling 📁
 
 ### Major Changes
+
 - **Removed**: `auto-deploy-all.js` - Outdated script using basic continuous hacking
   - Replaced in all documentation with `auto-expand.js` (superior root-and-deploy)
   - Removed from both `deploy/` folder and `bitburner-update.js` download list
-  
 - **Reorganized**: `home-batcher.js` moved from `deploy/` → `batch/`
   - Now properly grouped with other batch scripts (`simple-batcher.js`, `batch-manager.js`)
   - Updated all 9+ documentation files to reflect new location
@@ -1379,31 +1545,31 @@ Improvement:        490x faster, $7.5B/hour
 ### Enhanced - home-batcher.js (Major Rewrite) 🚀
 
 **Critical Bug Fixed**:
+
 - Original version would silently fail to start hack script if RAM ran out
 - Only weaken/grow would run, no money actually hacked
 - No error messages shown to user
 
 **New Features**:
+
 1. **Conflict Detection** ⚠️
    - Warns about other scripts competing for RAM (e.g., batch-manager.js)
    - Shows which scripts are running and their thread counts
-   
 2. **Detailed RAM Analysis** 📊
    - Shows available vs needed RAM with precise calculations
    - Displays thread allocation breakdown (h/g/w)
    - Pre-validates RAM before attempting to start scripts
-   
 3. **Explicit Failure Reporting** 🚨
    - Checks RAM availability before EACH script execution
    - Reports exactly which scripts failed and why
    - Shows needed vs available RAM for failed scripts
-   
 4. **Smart Summary** ✅
    - Clear success/failure counts
    - Helpful recommendations if partial failure occurs
    - Professional formatted output with visual indicators
 
 **Example Output**:
+
 ```
 ⚠ WARNING: 1 other script(s) running on home:
   - batch/batch-manager.js (1 threads)
@@ -1420,23 +1586,26 @@ Needed RAM: 496.95GB
 ```
 
 ### Documentation Updates
+
 - Updated all references to `auto-deploy-all.js` → `auto-expand.js`
 - Updated all references to `deploy/home-batcher.js` → `batch/home-batcher.js`
-- Files updated: bitburner-update.js, QUICK_REFERENCE.md, README.md, CHANGELOG.md,
-  SCRIPT_REFERENCE.md, PROJECT_STRUCTURE.md, DETAILED_CHANGES.md, 
-  ERROR_HANDLING_IMPROVEMENTS.md, NEW_GAME_QUICKSTART.md, replace-pservs-no-copy.js
+- Files updated: bitburner-update.js, QUICK_REFERENCE.md, README.md, CHANGELOG.md, SCRIPT_REFERENCE.md,
+  PROJECT_STRUCTURE.md, DETAILED_CHANGES.md, ERROR_HANDLING_IMPROVEMENTS.md, NEW_GAME_QUICKSTART.md,
+  replace-pservs-no-copy.js
 
 ### Impact
+
 ✅ Cleaner folder organization with logical script grouping  
 ✅ No more silent failures - complete transparency  
 ✅ Better diagnostics for troubleshooting RAM issues  
-✅ Enterprise-grade error handling and reporting  
+✅ Enterprise-grade error handling and reporting
 
 ---
 
 ## [1.4.3] - 2025-10-26 - Intelligent Quiet Mode Logging 🔔
 
 ### Added
+
 - **batch-manager.js Enhanced Logging** - Important events now always visible in quiet mode
   - New three-tier logging system: `info()`, `important()`, `error()`/`warn()`
   - Rooting notifications bypass quiet flag: "✓ Rooted: {server} (Level {X}, {Y} ports)"
@@ -1444,45 +1613,51 @@ Needed RAM: 496.95GB
   - Regular operational messages still respect `--quiet` flag
 
 ### Technical Details
+
 - **Enhancement**: Created `important()` logging function that always uses `ns.tprint()`
 - **Rationale**: Server rooting is critical game progression information that shouldn't be hidden
 - **Implementation**: Lines 60, 128, and 137 in batch-manager.js
-- **Behavior**: 
+- **Behavior**:
   - With `--quiet`: Rooting notifications visible, routine status hidden
   - Without `--quiet`: All messages visible as normal
   - Errors/warnings: Always visible in both modes
 
 ### Impact
+
 ✅ Never miss important rooting notifications in quiet mode  
 ✅ Maintain clean output with --quiet for routine operations  
-✅ Better user experience with intelligent message prioritization  
+✅ Better user experience with intelligent message prioritization
 
 ---
 
 ## [1.4.2] - 2025-10-26 - Batch Manager Path Fix 🔧
 
 ### Fixed
+
 - **batch-manager.js Script Path Reference** - Fixed incorrect path to simple-batcher.js
   - Changed from `"simple-batcher.js"` to `"batch/simple-batcher.js"`
   - Resolves "scp failed" error when batch-manager attempts to copy batcher script
   - Updated in all locations: scripts/, bitburner-remote-api/src/, bitburner-remote-api/dist/
 
 ### Technical Details
+
 - **Issue**: batch-manager.js was looking for simple-batcher.js in root directory instead of batch/ subdirectory
 - **Root Cause**: Script reference didn't account for organized folder structure
 - **Solution**: Updated batcher constant to include full path: `batch/simple-batcher.js`
 - **Result**: batch-manager.js can now successfully locate and copy simple-batcher.js to target servers
 
 ### Impact
+
 ✅ Batch manager now works correctly with folder-organized structure  
 ✅ Eliminates "scp failed" errors during batch system initialization  
-✅ Maintains consistency with Remote API folder organization  
+✅ Maintains consistency with Remote API folder organization
 
 ---
 
 ## [1.4.1] - 2025-10-26 - Remote API Path Compatibility Fixes 🔧
 
 ### Fixed
+
 - **Deployment Script Path References** - Updated 4 scripts for organized folder structure
   - `auto-expand.js` - Fixed reference to `deploy/hack-universal.js`
   - `deploy-hack-joesguns.js` - Fixed reference to `deploy/hack-joesguns.js`
@@ -1490,22 +1665,26 @@ Needed RAM: 496.95GB
   - `home-batcher.js` - Fixed references to `core/attack-*.js` scripts
 
 ### Technical Details
+
 - **Issue**: Scripts were using flat file paths from old GitHub repo structure
 - **Solution**: Updated all script references to use organized folder paths
 - **Result**: All deployment scripts now work correctly with Remote API folder structure
 - **Testing**: Verified `deploy/auto-expand.js` successfully executes in Bitburner
 
 ### Impact
+
 ✅ Remote API Development Workflow fully operational  
 ✅ All deployment automation scripts working correctly  
-✅ Folder organization preserved both in development and in-game  
+✅ Folder organization preserved both in development and in-game
 
 ---
 
 ## [1.4.0] - 2025-10-26 - Remote API Development Workflow Integration ⚡
 
 ### Added
+
 - **Remote API Dual Workflow** - Professional development environment with instant sync 🆕
+
   - TypeScript Template integration (bitburner-remote-api workspace)
   - WebSocket-based instant file synchronization (< 2 seconds)
   - Organized folder structure preserved in-game (analysis/, batch/, core/, deploy/, utils/, config/)
@@ -1523,7 +1702,9 @@ Needed RAM: 496.95GB
   - **Setup-RemoteAPI-Workspace.ps1** (141 lines) - One-click script migration tool
 
 ### Changed
+
 - **README.md** - Added Remote API as primary development method (Option 1)
+
   - Added Dual Workflow quick start section
   - Updated installation options with Remote API benefits
   - Added workflow comparison and pro tips
@@ -1536,6 +1717,7 @@ Needed RAM: 496.95GB
 ### Workflow Strategy
 
 **Active Development (Remote API):**
+
 ```
 Morning: npm run watch → Connect Bitburner
 All Day: Edit → Save (Ctrl+S) → Auto-sync → Test (10-15 sec loop)
@@ -1543,6 +1725,7 @@ Evening: Copy stable changes → Push to GitHub
 ```
 
 **Version Control (GitHub):**
+
 - Maintained as backup and sharing mechanism
 - Push-ToGitHub.ps1 still available
 - bitburner-update.js still functional
@@ -1551,12 +1734,14 @@ Evening: Copy stable changes → Push to GitHub
 ### Technical Details
 
 **Remote API Server:**
+
 - WebSocket server on localhost:12525
 - Based on official Bitburner TypeScript Template
 - File watching with instant synchronization
 - Folder structure preservation
 
 **Workspace Organization:**
+
 ```
 bitburner-remote-api/src/    (Active Development)
   ├── analysis/
@@ -1578,12 +1763,14 @@ scripts/                     (GitHub Backup)
 ### Performance Impact
 
 **Time Savings per Development Session:**
+
 - Per single edit: 44 seconds saved (54% faster)
 - Per 10 edits: 7.3 minutes saved
 - Per 20 edits: 11.7 minutes saved
 - Monthly (20 sessions): 4 hours saved
 
 **Developer Experience:**
+
 - ✅ No more manual Push-ToGitHub.ps1 during development
 - ✅ No more wget commands
 - ✅ No more bitburner-update.js wait times
@@ -1594,24 +1781,28 @@ scripts/                     (GitHub Backup)
 ### Benefits
 
 **Development Speed:**
+
 - Instant file synchronization (< 2 seconds)
 - 4-5x faster iteration cycle
 - Zero manual deployment steps
 - Edit → Save → Test workflow
 
 **Code Quality:**
+
 - Full VS Code features (IntelliSense, autocomplete, debugging)
 - Organized folder structure maintained
 - Type definitions available (optional TypeScript)
 - Better error catching before deployment
 
 **Safety:**
+
 - Dual workspace strategy eliminates risk
 - GitHub repo unchanged and maintained
 - Can fall back to GitHub method anytime
 - Version control preserved
 
 **Flexibility:**
+
 - Use Remote API for active development
 - Use GitHub for version control
 - Switch between methods freely
@@ -1631,6 +1822,7 @@ scripts/                     (GitHub Backup)
 ### Prerequisites
 
 **Required (for Remote API only):**
+
 - Node.js v16+ (includes npm)
 - Git (for cloning template)
 - VS Code (recommended)
@@ -1640,6 +1832,7 @@ scripts/                     (GitHub Backup)
 ### Migration Path
 
 **For Existing Users:**
+
 1. Run Setup-RemoteAPI-Workspace.ps1 (copies all scripts)
 2. Start npm run watch
 3. Connect Bitburner to Remote API
@@ -1660,6 +1853,7 @@ scripts/                     (GitHub Backup)
 ## [1.3.0] - 2025-10-26 - New Game & Augmentation Recovery Quickstart Guide
 
 ### Added
+
 - **NEW_GAME_QUICKSTART.md** - Comprehensive quickstart guide for fresh starts 🆕
   - Fast-track action plan for brand new game starts
   - Post-augmentation recovery procedures
@@ -1671,6 +1865,7 @@ scripts/                     (GitHub Backup)
   - Cheat sheets for fastest recovery paths
 
 ### Changed
+
 - **README.md** - Added prominent link to NEW_GAME_QUICKSTART.md in Quick Start section
 - **QUICK_REFERENCE.md** - Added NEW_GAME_QUICKSTART.md reference at top of quick commands
 - **docs/DOCUMENTATION_INDEX.md** - Added NEW_GAME_QUICKSTART.md to main documentation section
@@ -1679,6 +1874,7 @@ scripts/                     (GitHub Backup)
   - Added to common tasks reference table
 
 ### Benefits
+
 - Answers the critical "What do I do after augmentation?" question
 - Provides clear action plan for fastest recovery
 - Eliminates confusion about starting fresh or recovering
@@ -1686,6 +1882,7 @@ scripts/                     (GitHub Backup)
 - Success metrics help players verify they're on track
 
 ### Documentation Structure
+
 ```
 NEW_GAME_QUICKSTART.md (365 lines)
 ├── Brand New Game Guide
@@ -1705,6 +1902,7 @@ NEW_GAME_QUICKSTART.md (365 lines)
 ## [1.2.0] - 2025-10-26 - Profit Scanner Default Behavior Improvement
 
 ### Changed
+
 - **profit-scan-flex.js** - Changed default behavior for better UX
   - **BREAKING CHANGE**: Now filters out zero-money servers BY DEFAULT
   - Added `--all` flag to show ALL servers (including purchased servers, home, darkweb)
@@ -1714,6 +1912,7 @@ NEW_GAME_QUICKSTART.md (365 lines)
   - Significantly improved user experience with cleaner default output
 
 ### Technical Details
+
 ```javascript
 // Lines 34-36: New flag logic
 const showAll = flags.has("--all");
@@ -1722,6 +1921,7 @@ const onlyMoney = !showAll;
 ```
 
 ### Migration Notes
+
 - **BREAKING CHANGE**: Default behavior has changed
 - **Before**: `run profit-scan-flex.js` showed ALL servers (including purchased servers)
 - **After**: `run profit-scan-flex.js` shows ONLY money servers (cleaner output)
@@ -1732,6 +1932,7 @@ const onlyMoney = !showAll;
 ## [1.1.1] - 2025-10-26 - Profit Scanner Filter Enhancement
 
 ### Fixed
+
 - **profit-scan-flex.js** - Enhanced `--only-money` flag functionality
   - Previously only filtered during override file generation
   - Now filters both during generation AND display output
@@ -1741,12 +1942,14 @@ const onlyMoney = !showAll;
   - Bug fix: Lines 137-138 added display-time filtering that respects `--only-money` flag
 
 ### Technical Details
+
 ```javascript
 // Added at line 137-138 in display logic
 if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ```
 
 ### Migration Notes
+
 - No breaking changes
 - Existing profiler-overrides.json files generated with `--only-money` will work correctly
 - Users can regenerate cache with `rm profiler-overrides.json` then run with `--only-money` flag
@@ -1755,6 +1958,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ## [1.1.0] - 2025-10-25 - Advanced Profit Scanner
 
 ### Added
+
 - **profit-scan-flex.js** - Advanced profit scanner with profiler integration
   - Automatic caching via `profiler-overrides.json` file
   - Configurable output limit (default 30 servers)
@@ -1766,6 +1970,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
   - Superior to basic profit-scan.js for repeated analysis
 
 ### Updated
+
 - **bitburner-update.js** - Added profit-scan-flex.js to essential downloads
 - **docs/SCRIPT_REFERENCE.md** - Added comprehensive profit-scan-flex.js documentation
 - **README.md** - Added profit-scan-flex.js to analysis tools section
@@ -1778,6 +1983,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 #### Added
 
 ##### Project Structure
+
 - **Organized directory structure** with logical categorization:
   - `core/` - Core attack scripts (hack, grow, weaken)
   - `batch/` - Batch management scripts
@@ -1788,6 +1994,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
   - `docs/` - Comprehensive documentation
 
 ##### Documentation
+
 - **README.md** - Main project overview with quick start guide
 - **GETTING_STARTED.md** - Step-by-step getting started guide with game stage progression
 - **SCRIPT_REFERENCE.md** - Complete script reference with usage examples
@@ -1796,6 +2003,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 - **CHANGELOG.md** - This file
 
 ##### Configuration Files
+
 - **config/default-targets.js** - Predefined target lists for different game stages:
   - Early game targets (n00dles, foodnstuff, etc.)
   - Mid game targets (joesguns, hong-fang-tea, etc.)
@@ -1804,6 +2012,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 - Recommended settings for thread distribution and timing multipliers
 
 ##### New Utility Scripts
+
 - **utils/server-info.js** - Display detailed server information with profitability analysis
 - **utils/estimate-production.js** - Estimate production rates for different thread configurations
 - **utils/global-kill.js** - Enhanced with better error handling
@@ -1811,13 +2020,16 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 - **utils/list-pservs.js** - Enhanced with comprehensive server status
 
 ##### New Scripts
+
 - **deploy/deploy-hack-joesguns.js** - Deploy with success/failure tracking
 - **batch/home-batcher.js** - Home server batch operations with validation
 
 #### Enhanced
 
 ##### Core Scripts (`core/`)
+
 All core attack scripts enhanced with:
+
 - Better parameter validation
 - Consistent error handling
 - Improved documentation headers
@@ -1825,6 +2037,7 @@ All core attack scripts enhanced with:
 ##### Batch Management (`batch/`)
 
 **simple-batcher.js** improvements:
+
 - **Structured logging system** with quiet mode support
   - `log()` function respects `--quiet` flag
   - `logError()` for consistent error formatting
@@ -1840,6 +2053,7 @@ All core attack scripts enhanced with:
 - **Process cleanup** to avoid duplicate deployments
 
 **batch-manager.js** improvements:
+
 - **Three-level logging** (info, warn, error):
   - `info()` for normal operations (quiet-aware)
   - `warn()` for warnings (always visible)
@@ -1858,12 +2072,14 @@ All core attack scripts enhanced with:
 ##### Analysis Scripts (`analysis/`)
 
 **profit-scan.js** improvements:
+
 - Better error handling for inaccessible servers
 - Formatted output with currency display
 - Shows top 30 targets instead of all
 - Enhanced profitability calculations
 
 **production-monitor.js** improvements:
+
 - Better formatting with currency display
 - Error handling for invalid durations
 - Clear start/end status reporting
@@ -1871,6 +2087,7 @@ All core attack scripts enhanced with:
 ##### Deployment Scripts (`deploy/`)
 
 **auto-deploy-all.js** improvements:
+
 - **Pre-deployment validation**:
   - Checks script existence on home
   - Validates root access before attempt
@@ -1882,6 +2099,7 @@ All core attack scripts enhanced with:
   - Per-server status reporting
 
 **purchase-server-8gb.js** improvements:
+
 - **Pre-purchase validation**:
   - Server limit check before attempting purchase
   - Funds availability check with formatted cost display
@@ -1899,6 +2117,7 @@ All core attack scripts enhanced with:
   - All info shown before purchase attempt
 
 **replace-pservs-no-copy.js** improvements:
+
 - **Pre-operation summary**:
   - Total cost calculation and display
   - Server count reporting
@@ -1913,6 +2132,7 @@ All core attack scripts enhanced with:
   - Detailed error messages per operation
 
 **deploy-hack-joesguns.js** (new script):
+
 - **Comprehensive deployment tracking**:
   - Success and failure counters
   - Per-server deployment status
@@ -1928,6 +2148,7 @@ All core attack scripts enhanced with:
   - Per-operation error context
 
 **home-batcher.js** (new script):
+
 - **Home server optimization**:
   - Automatic RAM detection
   - Thread distribution calculation
@@ -1943,42 +2164,49 @@ All core attack scripts enhanced with:
 #### Error Handling & Logging Improvements
 
 ##### 1. Structured Logging System
+
 - **Multi-level logging** (info, warn, error) in all scripts
 - **Quiet mode support** for automated operations
 - **Consistent formatting** across all log messages
 - **Context-aware logging** with script names and operations
 
 ##### 2. Try-Catch Error Handling
+
 - **Comprehensive error wrapping** for all critical operations
 - **Graceful failure recovery** - scripts continue on individual errors
 - **Error context preservation** - shows what operation failed
 - **Nested error handling** - independent operation protection
 
 ##### 3. Validation and Early Returns
+
 - **Pre-execution validation** for all prerequisites
 - **Early return patterns** prevent downstream errors
 - **Parameter validation** with usage messages
 - **Resource validation** (RAM, scripts, access) before operations
 
 ##### 4. Detailed Error Messages
+
 - **Specific error descriptions** instead of generic messages
 - **Diagnostic information** included in error output
 - **Formatted values** (RAM, money) for readability
 - **Actionable suggestions** for error resolution
 
 ##### 5. Success/Failure Tracking
+
 - **Operation counters** in deployment scripts
 - **Final summaries** showing success/failure counts
 - **Per-operation status** reporting
 - **Overall completion status** for monitoring
 
 ##### 6. RAM Validation Enhancements
+
 - **Multiple validation conditions** (NaN, zero, negative)
 - **Formatted comparisons** (available vs required)
 - **Clear error messages** with specific values
 - **Safety checks** before thread calculations
 
 ##### 7. Enhanced User Feedback
+
 - **Progress indicators** during long operations
 - **Status updates** for each server/operation
 - **Summary reports** at completion
@@ -1987,18 +2215,21 @@ All core attack scripts enhanced with:
 #### Changed
 
 ##### File Organization
+
 - **Moved all scripts** from root to organized directories
 - **Cleaned up root directory** - removed duplicate/old scripts
 - **Created logical categories** for easier navigation
 - **Maintained backward compatibility** with script names
 
 ##### Script Improvements
+
 - **All scripts** now have consistent headers with usage examples
 - **Enhanced documentation** in script comments
 - **Standardized parameter handling** across all scripts
 - **Improved output formatting** with ns.nFormat
 
 ##### Documentation Updates
+
 - **Comprehensive README** with all features documented
 - **Getting started guide** with game stage progression
 - **Complete script reference** with examples
@@ -2007,6 +2238,7 @@ All core attack scripts enhanced with:
 #### Removed
 
 ##### Cleanup
+
 - **Deleted duplicate scripts** from root directory after reorganization:
   - attack-hack.js, attack-grow.js, attack-weaken.js (moved to core/)
   - batch-manager.js, simple-batcher.js (moved to batch/)
@@ -2021,14 +2253,16 @@ All core attack scripts enhanced with:
 ### Technical Details
 
 #### Logging System Architecture
+
 ```javascript
 // Three-level logging with quiet mode support
-const info = (...parts) => ns.print(parts.join(" "));           // Quiet-aware
+const info = (...parts) => ns.print(parts.join(" ")); // Quiet-aware
 const warn = (...parts) => ns.tprint("[WARN] " + parts.join(" ")); // Always visible
-const error = (...parts) => ns.tprint("[ERR] " + parts.join(" "));  // Always visible
+const error = (...parts) => ns.tprint("[ERR] " + parts.join(" ")); // Always visible
 ```
 
 #### Error Handling Pattern
+
 ```javascript
 try {
   // Critical operation
@@ -2046,6 +2280,7 @@ try {
 ```
 
 #### Validation Pattern
+
 ```javascript
 // Early validation with informative messages
 if (!prerequisiteCheck()) {
@@ -2063,31 +2298,38 @@ if (available < required) {
 ### Migration Notes
 
 #### For Existing Users
+
 1. **Backup your current scripts** before updating
 2. **Copy scripts from organized directories** to your game home directory
 3. **Update any custom scripts** that reference the old script names
 4. **Test batch operations** in dry-run mode first (`--dry` flag)
 
 #### Script Path Changes
+
 All scripts have moved to subdirectories but can still be run from home:
+
 ```bash
 # Old: run attack-hack.js target
 # New: run attack-hack.js target  (still works if copied to home)
 ```
 
 #### Breaking Changes
+
 None - all script names and interfaces remain the same.
 
 ### Performance Improvements
+
 - **Reduced log spam** with quiet mode support
 - **Better error recovery** prevents script restarts
 - **Efficient validation** prevents wasted operations
 - **Smart retry logic** in batch manager
 
 ### Known Issues
+
 None identified in this release.
 
 ### Future Enhancements
+
 - Additional target presets for specific servers
 - Advanced batch timing optimization
 - Integration with game statistics API

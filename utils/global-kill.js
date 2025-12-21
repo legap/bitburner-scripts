@@ -55,7 +55,6 @@ export async function main(ns) {
       ns.kill(proc.pid);
       totalKilled++;
       await ns.sleep(10); // Small delay between kills
-
     }
   } catch (e) {
     // Ignore errors

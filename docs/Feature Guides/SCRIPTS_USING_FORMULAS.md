@@ -4,12 +4,15 @@ This document tracks which scripts require or use Formulas.exe ($5 billion progr
 
 ## 🔮 Scripts That REQUIRE Formulas.exe
 
-These scripts will not work without Formulas.exe installed. They check for `ns.formulas` availability and display an error message if not found.
+These scripts will not work without Formulas.exe installed. They check for `ns.formulas` availability and display an
+error message if not found.
 
 ### 1. test-formulas.js
+
 **Location**: `utils/test-formulas.js`  
 **Purpose**: Test Formulas.exe installation  
 **Formulas Used**:
+
 - `ns.formulas.hacking.hackChance(server, player)`
 - `ns.formulas.hacking.hackPercent(server, player)`
 - `ns.formulas.hacking.hackTime(server, player)`
@@ -17,23 +20,27 @@ These scripts will not work without Formulas.exe installed. They check for `ns.f
 - `ns.formulas.hacking.weakenTime(server, player)`
 - `ns.formulas.hacking.growPercent(server, threads, player)`
 
-**What It Does**: Verifies Formulas.exe is working by testing all formula functions against a target server (joesguns by default).
+**What It Does**: Verifies Formulas.exe is working by testing all formula functions against a target server (joesguns by
+default).
 
 ---
 
 ### 2. f-profit-scan-flex.js 🌟
+
 **Location**: `analysis/f-profit-scan-flex.js`  
 **Purpose**: EXACT target selection with perfect accuracy  
-**Requirement Check**: Uses `ns.fileExists("Formulas.exe", "home")` to verify ownership before running
-**Error Handling**: Displays helpful error message with alternative (profit-scan-flex.js) if Formulas.exe not found
-**Formulas Used**:
+**Requirement Check**: Uses `ns.fileExists("Formulas.exe", "home")` to verify ownership before running **Error
+Handling**: Displays helpful error message with alternative (profit-scan-flex.js) if Formulas.exe not found **Formulas
+Used**:
+
 - `ns.formulas.hacking.hackTime(server, player)` - Exact timing calculations
 - `ns.formulas.hacking.growTime(server, player)` - Exact grow timing
 - `ns.formulas.hacking.weakenTime(server, player)` - Exact weaken timing
 - `ns.formulas.hacking.hackPercent(server, player)` - Exact money per thread
 - `ns.formulas.hacking.hackChance(server, player)` - Exact success probability
 
-**What It Does**: 
+**What It Does**:
+
 - Scans all rooted servers with PERFECT calculations
 - Ranks by current state or optimal potential (--optimal flag)
 - Shows exact hack chance at current and optimal security levels
@@ -45,9 +52,11 @@ These scripts will not work without Formulas.exe installed. They check for `ns.f
 ---
 
 ### 3. f-estimate-production.js 💰
+
 **Location**: `analysis/f-estimate-production.js`  
 **Purpose**: Guaranteed accurate production predictions  
 **Formulas Used**:
+
 - `ns.formulas.hacking.hackTime(server, player)` - Exact hack duration
 - `ns.formulas.hacking.growTime(server, player)` - Exact grow duration
 - `ns.formulas.hacking.weakenTime(server, player)` - Exact weaken duration
@@ -55,6 +64,7 @@ These scripts will not work without Formulas.exe installed. They check for `ns.f
 - `ns.formulas.hacking.hackPercent(server, player)` - Exact steal percentage
 
 **What It Does**:
+
 - Calculates exact production rates for current server state
 - Projects exact optimal state production (after prep)
 - Shows precise improvement percentages
@@ -67,20 +77,21 @@ These scripts will not work without Formulas.exe installed. They check for `ns.f
 
 ## 📊 Comparison: Regular vs Formula Scripts
 
-| Metric | Regular Scripts | Formula Scripts (🔮) |
-|--------|----------------|---------------------|
-| **Hack Chance** | ~Estimated ±5% | ✅ **100% Exact** |
-| **Hack Percent** | ~Estimated ±10% | ✅ **100% Exact** |
-| **Timing** | ~Estimated ±15% | ✅ **100% Exact** |
-| **Optimal Projections** | ~Approximated ±20% | ✅ **Perfect** |
-| **Player Stats** | Not integrated | ✅ **Fully Integrated** |
-| **Error Margin** | ±10-20% | ✅ **0%** |
-| **Cost** | Free | **$5 billion one-time** |
-| **Survives Augmentations** | N/A | ✅ **Permanent** |
+| Metric                     | Regular Scripts    | Formula Scripts (🔮)    |
+| -------------------------- | ------------------ | ----------------------- |
+| **Hack Chance**            | ~Estimated ±5%     | ✅ **100% Exact**       |
+| **Hack Percent**           | ~Estimated ±10%    | ✅ **100% Exact**       |
+| **Timing**                 | ~Estimated ±15%    | ✅ **100% Exact**       |
+| **Optimal Projections**    | ~Approximated ±20% | ✅ **Perfect**          |
+| **Player Stats**           | Not integrated     | ✅ **Fully Integrated** |
+| **Error Margin**           | ±10-20%            | ✅ **0%**               |
+| **Cost**                   | Free               | **$5 billion one-time** |
+| **Survives Augmentations** | N/A                | ✅ **Permanent**        |
 
 ## 🎯 When to Use Formula Scripts
 
 ### ✅ Use Formula Scripts When:
+
 - You have Formulas.exe installed ($5 billion)
 - You need **perfect accuracy** for target selection
 - You're comparing multiple targets and need **zero error**
@@ -89,6 +100,7 @@ These scripts will not work without Formulas.exe installed. They check for `ns.f
 - You want to see **exact improvement** from prep work
 
 ### ⚠️ Use Regular Scripts When:
+
 - You don't have Formulas.exe yet
 - You want "good enough" estimates quickly
 - You're in early game before $5B available
@@ -116,27 +128,31 @@ run analysis/production-monitor.js 60
 
 ### How Formulas.exe Works
 
-Formulas.exe unlocks the `ns.formulas` API which provides access to the game's internal calculation functions. Instead of estimating based on server stats, these functions use the exact same algorithms the game uses.
+Formulas.exe unlocks the `ns.formulas` API which provides access to the game's internal calculation functions. Instead
+of estimating based on server stats, these functions use the exact same algorithms the game uses.
 
 **Example**:
+
 ```javascript
 // Regular script (estimation)
 const hackChance = (100 - server.hackDifficulty) / 100; // rough guess
 
 // Formula script (exact)
-const hackChance = ns.formulas.hacking.hackChance(server, player); 
+const hackChance = ns.formulas.hacking.hackChance(server, player);
 // Returns exact value like 0.9732 (97.32% success)
 ```
 
 ### Player Stats Integration
 
 Formula scripts automatically account for:
+
 - Your current hacking level
 - Hacking multipliers from augmentations
 - Skills and stats
 - Faction reputation effects
 
 **Example from User**:
+
 - Hacking Level: 476
 - Hacking Multiplier: 134%
 - Result: Perfect calculations accounting for augmentation bonuses
@@ -144,15 +160,18 @@ Formula scripts automatically account for:
 ### Server State Calculations
 
 Formula scripts can calculate for:
+
 - **Current State**: Server as it is right now
 - **Optimal State**: Server at min security, max money
 
 This lets you see:
+
 - What you're getting NOW
 - What you COULD get after prep
 - EXACT improvement percentage
 
 **Real Example**:
+
 ```
 Current (security 97.0): $2.51/s
 Optimal (security 14.0): $14.12k/s
@@ -188,9 +207,10 @@ bitburner/
 
 ## 💾 Memory Note
 
-This is version 1.7.0 of the script suite. Formula scripts were created October 26, 2025 after user purchased Formulas.exe for $5 billion. All scripts verified working with user's Level 476 hacking stats.
+This is version 1.7.0 of the script suite. Formula scripts were created October 26, 2025 after user purchased
+Formulas.exe for $5 billion. All scripts verified working with user's Level 476 hacking stats.
 
 ---
 
-**Remember**: Formulas.exe is a **one-time $5 billion investment** that provides **perfect accuracy forever** across all augmentation resets. It's one of the best investments in the game for optimization-focused players!
-
+**Remember**: Formulas.exe is a **one-time $5 billion investment** that provides **perfect accuracy forever** across all
+augmentation resets. It's one of the best investments in the game for optimization-focused players!

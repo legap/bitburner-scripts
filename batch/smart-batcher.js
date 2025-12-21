@@ -51,7 +51,8 @@ export async function main(ns) {
 
   const log = (...parts) => {
     const msg = parts.join(" ");
-    if (quiet) ns.print(msg); else ns.tprint(msg);
+    if (quiet) ns.print(msg);
+    else ns.tprint(msg);
   };
   const logError = (...parts) => ns.tprint(parts.join(" "));
 
@@ -64,7 +65,9 @@ export async function main(ns) {
   // Ensure helpers exist on the host running the batcher
   for (const f of helpers) {
     if (!ns.fileExists(f, host)) {
-      logError(`ERROR: helper missing on ${host}: ${f}. Place the helper files on the server running this script and retry.`);
+      logError(
+        `ERROR: helper missing on ${host}: ${f}. Place the helper files on the server running this script and retry.`
+      );
       return;
     }
   }
@@ -72,51 +75,50 @@ export async function main(ns) {
   // ═══════════════════════════════════════════════════════════════
   // SMART RATIO CALCULATION (BitNode-Aware)
   // ═══════════════════════════════════════════════════════════════
-  
+
   // Get target server timings
   const hackTime = ns.getHackTime(target);
   const growTime = ns.getGrowTime(target);
   const weakenTime = ns.getWeakenTime(target);
-  
+
   // Security constants (from game mechanics)
-  const HACK_SECURITY = 0.002;   // Security added per hack thread
-  const GROW_SECURITY = 0.004;   // Security added per grow thread
-  
+  const HACK_SECURITY = 0.002; // Security added per hack thread
+  const GROW_SECURITY = 0.004; // Security added per grow thread
+
   // Get weaken amount (accounts for BitNode multipliers)
   const WEAKEN_AMOUNT = ns.weakenAnalyze(1);
-  
+
   // Calculate timing ratios (how many operations fit in the batch window)
   const batchWindow = Math.max(hackTime, growTime, weakenTime);
   const hackTimeRatio = weakenTime / hackTime;
   const growTimeRatio = weakenTime / growTime;
-  
+
   // Get target server state
   const maxMoney = ns.getServerMaxMoney(target);
   const minSecurity = ns.getServerMinSecurityLevel(target);
   const currentMoney = ns.getServerMoneyAvailable(target);
   const currentSecurity = ns.getServerSecurityLevel(target);
-  
+
   // Calculate threads needed for optimal prepped server (at max money, min security)
   const hackThreadsBase = 1;
   const moneyPerHackThread = maxMoney * ns.hackAnalyze(target);
   const moneyStolen = hackThreadsBase * moneyPerHackThread;
-  
+
   // Calculate grow threads using formulas if available, otherwise use enhanced estimation
   let growThreadsBase;
   const hasFormulas = ns.fileExists("Formulas.exe", "home");
-  
+
   if (hasFormulas) {
     // Use precise formulas calculation (accounts for BitNode multipliers)
     const player = ns.getPlayer();
     const server = ns.getServer(target);
-    
+
     // Simulate server state AFTER hacking
     const moneyAfterHack = maxMoney - moneyStolen;
     const growthNeeded = maxMoney / Math.max(1, moneyAfterHack);
-    
+
     // Calculate exact grow threads needed (this accounts for ServerGrowthRate multiplier)
     growThreadsBase = Math.ceil(ns.formulas.hacking.growThreads(server, player, maxMoney, 1));
-    
   } else {
     // Enhanced estimation without formulas
     // Account for typical BitNode growth variations
@@ -124,13 +126,13 @@ export async function main(ns) {
     const growthMultiplier = Math.max(2, 1 / hackPercent) * (100 / Math.max(1, serverGrowth));
     growThreadsBase = Math.ceil(hackThreadsBase * growthMultiplier);
   }
-  
+
   // Calculate weaken threads needed to counteract security (using BitNode-aware weaken amount)
   const securityFromHack = hackThreadsBase * HACK_SECURITY;
   const securityFromGrow = growThreadsBase * GROW_SECURITY;
   const totalSecurity = securityFromHack + securityFromGrow;
   const weakenThreadsBase = Math.ceil(totalSecurity / WEAKEN_AMOUNT);
-  
+
   // Calculate thread ratios (normalized to hack threads = 1)
   const totalThreadsBase = hackThreadsBase + growThreadsBase + weakenThreadsBase;
   const hackRatio = hackThreadsBase / totalThreadsBase;
@@ -143,10 +145,10 @@ export async function main(ns) {
   ns.tprint(`  SMART BATCHER: ${target}`);
   ns.tprint("═══════════════════════════════════════════════════════════════");
   ns.tprint(`\n📊 Timing Analysis:`);
-  ns.tprint(`  Hack Time:   ${(hackTime/1000).toFixed(2)}s`);
-  ns.tprint(`  Grow Time:   ${(growTime/1000).toFixed(2)}s`);
-  ns.tprint(`  Weaken Time: ${(weakenTime/1000).toFixed(2)}s (longest)`);
-  ns.tprint(`  Batch Window: ${(batchWindow/1000).toFixed(2)}s`);
+  ns.tprint(`  Hack Time:   ${(hackTime / 1000).toFixed(2)}s`);
+  ns.tprint(`  Grow Time:   ${(growTime / 1000).toFixed(2)}s`);
+  ns.tprint(`  Weaken Time: ${(weakenTime / 1000).toFixed(2)}s (longest)`);
+  ns.tprint(`  Batch Window: ${(batchWindow / 1000).toFixed(2)}s`);
   ns.tprint(`\n⚖️  Optimal Thread Ratios:`);
   ns.tprint(`  Hack:   ${(hackRatio * 100).toFixed(1)}% (base: ${hackThreadsBase})`);
   ns.tprint(`  Grow:   ${(growRatio * 100).toFixed(1)}% (base: ${growThreadsBase})`);
@@ -154,19 +156,23 @@ export async function main(ns) {
   ns.tprint(`\n🎯 Target: Hack ${(hackPercent * 100).toFixed(1)}% of server money per batch`);
   ns.tprint(`  Money per hack thread: ${formatNumber(ns, moneyPerHackThread)}`);
   ns.tprint(`  Weaken per thread: ${WEAKEN_AMOUNT.toFixed(4)} security`);
-  ns.tprint(`  Calculation method: ${hasFormulas ? "✓ Formulas.exe (BitNode-aware)" : "⚠ Estimation (may be inaccurate in some BitNodes)"}`);
-  ns.tprint(`  Timing efficiency: ${(batchWindow / (hackTime + growTime + weakenTime) * 100).toFixed(1)}%`);
-  
+  ns.tprint(
+    `  Calculation method: ${
+      hasFormulas ? "✓ Formulas.exe (BitNode-aware)" : "⚠ Estimation (may be inaccurate in some BitNodes)"
+    }`
+  );
+  ns.tprint(`  Timing efficiency: ${((batchWindow / (hackTime + growTime + weakenTime)) * 100).toFixed(1)}%`);
+
   if (!hasFormulas) {
     ns.tprint(`\n⚠️  WARNING: Formulas.exe not found!`);
     ns.tprint(`  Thread ratios are estimated and may not be accurate in BitNodes`);
     ns.tprint(`  with different ServerGrowthRate or ServerWeakenRate multipliers.`);
     ns.tprint(`  For optimal results in all BitNodes, install Formulas.exe first.`);
   }
-  
+
   ns.tprint("");
   ns.tprint("═══════════════════════════════════════════════════════════════");
-  
+
   if (dryRun) {
     ns.tprint("");
     ns.tprint("🔍 DRY RUN MODE - No scripts will be started");
@@ -196,7 +202,11 @@ export async function main(ns) {
         if (ns.fileExists("relaySMTP.exe", host)) ns.relaysmtp(h);
         if (ns.fileExists("HTTPWorm.exe", host)) ns.httpworm(h);
         if (ns.fileExists("SQLInject.exe", host)) ns.sqlinject(h);
-        try { ns.nuke(h); } catch (e) { /* ignore */ }
+        try {
+          ns.nuke(h);
+        } catch (e) {
+          /* ignore */
+        }
       }
     } catch (e) {
       // best-effort; ignore errors
@@ -244,7 +254,11 @@ export async function main(ns) {
       for (const p of procs) {
         if (helpers.includes(p.filename)) {
           if (!dryRun) {
-            try { ns.kill(p.filename, h); } catch (e) { /* ignore */ }
+            try {
+              ns.kill(p.filename, h);
+            } catch (e) {
+              /* ignore */
+            }
           }
         }
       }
@@ -280,7 +294,7 @@ export async function main(ns) {
     // Total RAM = hackThreads * hackRam + growThreads * growRam + weakenThreads * weakenRam
     // where hackThreads = scale * hackRatio, growThreads = scale * growRatio, etc.
     // So: freeRam = scale * (hackRatio * hackRam + growRatio * growRam + weakenRatio * weakenRam)
-    const ramPerScaleUnit = (hackRatio * hackRam) + (growRatio * growRam) + (weakenRatio * weakenRam);
+    const ramPerScaleUnit = hackRatio * hackRam + growRatio * growRam + weakenRatio * weakenRam;
     const scale = Math.floor(freeRam / ramPerScaleUnit);
 
     // Calculate individual thread counts, ensuring at least 1 thread each
@@ -289,31 +303,45 @@ export async function main(ns) {
     let weakenThreads = Math.max(1, Math.floor(scale * weakenRatio));
 
     // Verify we don't exceed available RAM (adjust if needed due to rounding + Math.max)
-    let totalRamNeeded = (hackThreads * hackRam) + (growThreads * growRam) + (weakenThreads * weakenRam);
+    let totalRamNeeded = hackThreads * hackRam + growThreads * growRam + weakenThreads * weakenRam;
     while (totalRamNeeded > freeRam && (hackThreads > 1 || growThreads > 1 || weakenThreads > 1)) {
       // Reduce the largest thread count by 1
-      if (hackThreads * hackRam >= growThreads * growRam && hackThreads * hackRam >= weakenThreads * weakenRam && hackThreads > 1) {
+      if (
+        hackThreads * hackRam >= growThreads * growRam &&
+        hackThreads * hackRam >= weakenThreads * weakenRam &&
+        hackThreads > 1
+      ) {
         hackThreads--;
       } else if (growThreads * growRam >= weakenThreads * weakenRam && growThreads > 1) {
         growThreads--;
       } else if (weakenThreads > 1) {
         weakenThreads--;
       }
-      totalRamNeeded = (hackThreads * hackRam) + (growThreads * growRam) + (weakenThreads * weakenRam);
+      totalRamNeeded = hackThreads * hackRam + growThreads * growRam + weakenThreads * weakenRam;
     }
 
     // Skip if we can't fit minimum threads or if final allocation exceeds available RAM
     if (hackThreads < 1 || growThreads < 1 || weakenThreads < 1 || totalRamNeeded > freeRam) {
-      log(`${h}: insufficient RAM for minimum threads (need ${totalRamNeeded.toFixed(2)}GB, have ${freeRam.toFixed(2)}GB) - Skipping.`);
+      log(
+        `${h}: insufficient RAM for minimum threads (need ${totalRamNeeded.toFixed(2)}GB, have ${freeRam.toFixed(
+          2
+        )}GB) - Skipping.`
+      );
       continue;
     }
 
     const totalThreads = hackThreads + growThreads + weakenThreads;
-    log(`${h}: ${freeRam.toFixed(2)}GB free => ${totalThreads} threads => h${hackThreads}/g${growThreads}/w${weakenThreads}`);
+    log(
+      `${h}: ${freeRam.toFixed(
+        2
+      )}GB free => ${totalThreads} threads => h${hackThreads}/g${growThreads}/w${weakenThreads}`
+    );
 
     // Start helpers on remote host
     if (dryRun) {
-      log(`DRY: would run on ${h}: ${weakenScript} x${weakenThreads}, ${growScript} x${growThreads}, ${hackScript} x${hackThreads}`);
+      log(
+        `DRY: would run on ${h}: ${weakenScript} x${weakenThreads}, ${growScript} x${growThreads}, ${hackScript} x${hackThreads}`
+      );
       totalHackThreads += hackThreads;
       totalGrowThreads += growThreads;
       totalWeakenThreads += weakenThreads;
@@ -364,21 +392,36 @@ export async function main(ns) {
   ns.tprint(`\n📍 Target Server: ${target}`);
   ns.tprint(`🖥️  Servers Deployed: ${serversDeployed}`);
   ns.tprint(`\n⚡ Total Thread Allocation:`);
-  ns.tprint(`  Hack Threads:   ${totalHackThreads.toString().padStart(6)} (${(totalHackThreads / (totalHackThreads + totalGrowThreads + totalWeakenThreads) * 100).toFixed(1)}%)`);
-  ns.tprint(`  Grow Threads:   ${totalGrowThreads.toString().padStart(6)} (${(totalGrowThreads / (totalHackThreads + totalGrowThreads + totalWeakenThreads) * 100).toFixed(1)}%)`);
-  ns.tprint(`  Weaken Threads: ${totalWeakenThreads.toString().padStart(6)} (${(totalWeakenThreads / (totalHackThreads + totalGrowThreads + totalWeakenThreads) * 100).toFixed(1)}%)`);
+  ns.tprint(
+    `  Hack Threads:   ${totalHackThreads.toString().padStart(6)} (${(
+      (totalHackThreads / (totalHackThreads + totalGrowThreads + totalWeakenThreads)) *
+      100
+    ).toFixed(1)}%)`
+  );
+  ns.tprint(
+    `  Grow Threads:   ${totalGrowThreads.toString().padStart(6)} (${(
+      (totalGrowThreads / (totalHackThreads + totalGrowThreads + totalWeakenThreads)) *
+      100
+    ).toFixed(1)}%)`
+  );
+  ns.tprint(
+    `  Weaken Threads: ${totalWeakenThreads.toString().padStart(6)} (${(
+      (totalWeakenThreads / (totalHackThreads + totalGrowThreads + totalWeakenThreads)) *
+      100
+    ).toFixed(1)}%)`
+  );
   ns.tprint(`  Total Threads:  ${(totalHackThreads + totalGrowThreads + totalWeakenThreads).toString().padStart(6)}`);
-  
+
   // Calculate expected production
   const batchesPerMinute = 60000 / (batchWindow * 1.25);
   const expectedPerSec = totalHackThreads * moneyPerHackThread * (1000 / (batchWindow * 1.25));
-  
+
   ns.tprint(`\n💰 Expected Production (once server prepped):`);
   ns.tprint(`  Batches/min: ${batchesPerMinute.toFixed(2)}`);
   ns.tprint(`  Income rate: ${formatNumber(ns, expectedPerSec)}/s`);
   ns.tprint(`  Income rate: ${formatNumber(ns, expectedPerSec * 60)}/min`);
   ns.tprint(`  Income rate: ${formatNumber(ns, expectedPerSec * 3600)}/hr`);
-  
+
   ns.tprint("");
   ns.tprint("═══════════════════════════════════════════════════════════════");
   ns.tprint("✅ smart-batcher deployment complete!");
@@ -400,15 +443,15 @@ function formatNumber(ns, v) {
   } catch (e) {
     // Fall through to old method
   }
-  
+
   // Try old formatNumber (v2.x)
   try {
     return ns.formatNumber(v, 2);
   } catch (e) {
     // Manual fallback if both methods fail
-    if (v >= 1e9) return `$${(v/1e9).toFixed(2)}b`;
-    if (v >= 1e6) return `$${(v/1e6).toFixed(2)}m`;
-    if (v >= 1e3) return `$${(v/1e3).toFixed(2)}k`;
+    if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}b`;
+    if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}m`;
+    if (v >= 1e3) return `$${(v / 1e3).toFixed(2)}k`;
     return `$${v.toFixed(2)}`;
   }
 }

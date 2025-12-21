@@ -15,6 +15,7 @@ npm run watch:remote
 ```
 
 **Expected output:**
+
 ```
 Server is ready, running on 12525!
 ```
@@ -24,6 +25,7 @@ Server is ready, running on 12525!
 ### Step 2: Connect Bitburner
 
 **In Bitburner:**
+
 1. Options (⚙️) → Remote API
 2. Verify settings:
    - Hostname: `localhost`
@@ -50,6 +52,7 @@ Start coding with instant sync! ⚡
 4. **Repeat** - No manual deployment steps!
 
 **Example:**
+
 ```
 VS Code: Edit profit-scan-flex.js
 VS Code: Ctrl+S (save)
@@ -71,6 +74,7 @@ Bitburner: See results instantly!
 You now have **two separate folders:**
 
 #### Workspace 1: GitHub Repository (Stable/Distribution)
+
 ```
 C:\Users\YourUsername\bitburner\scripts\
 ├── analysis/
@@ -82,12 +86,14 @@ C:\Users\YourUsername\bitburner\scripts\
 ```
 
 **Purpose:**
+
 - Version control
 - Backups
 - Sharing via bitburner-update.js
 - Stable releases
 
 #### Workspace 2: Remote API (Active Development)
+
 ```
 C:\Users\YourUsername\bitburner\bitburner-remote-api\src\
 ├── analysis/
@@ -99,6 +105,7 @@ C:\Users\YourUsername\bitburner\bitburner-remote-api\src\
 ```
 
 **Purpose:**
+
 - Daily coding
 - Quick iterations
 - Testing
@@ -141,6 +148,7 @@ C:\Users\YourUsername\bitburner\bitburner-remote-api\src\
 **Developing a new script:**
 
 1. Create in Remote API workspace:
+
    ```
    src/analysis/new-scanner.js
    ```
@@ -148,6 +156,7 @@ C:\Users\YourUsername\bitburner\bitburner-remote-api\src\
 2. Develop with instant sync all day
 
 3. When stable, copy to GitHub repo:
+
    ```powershell
    Copy-Item bitburner-remote-api\src\analysis\new-scanner.js `
              scripts\analysis\new-scanner.js
@@ -170,6 +179,7 @@ C:\Users\YourUsername\bitburner\bitburner-remote-api\src\
 3. Test multiple iterations quickly
 
 4. When happy with changes, copy back to GitHub repo:
+
    ```powershell
    Copy-Item bitburner-remote-api\src\analysis\profit-scan-flex.js `
              scripts\analysis\profit-scan-flex.js
@@ -204,12 +214,14 @@ cd scripts
 ### End of Coding Session
 
 **Option A: Quick Wrap (30 seconds)**
+
 ```powershell
 # Just stop the server (Ctrl+C in npm run watch:remote window)
 # Your work is saved locally, continue tomorrow
 ```
 
 **Option B: Backup to GitHub (5 minutes)**
+
 ```powershell
 # 1. Copy stable changes to GitHub repo
 Copy-Item -Recurse -Force bitburner-remote-api\src\analysis\* scripts\analysis\
@@ -260,6 +272,7 @@ Then reconnect in Bitburner (Options → Remote API → Connect)
 ### Old GitHub-Only Workflow
 
 **Every single change:**
+
 ```
 1. Edit in VS Code          (30 sec)
 2. Save                     (1 sec)
@@ -276,6 +289,7 @@ Total: 81 seconds per change
 ### New Dual Workflow
 
 **During development (20 changes):**
+
 ```
 1. Edit in VS Code          (30 sec)
 2. Save (auto-sync!)        (2 sec)
@@ -287,6 +301,7 @@ Total: 37 seconds per change
 **For 20 changes:** 12.3 minutes
 
 **End of day (1 time):**
+
 ```
 Copy to GitHub repo         (2 min)
 Push to GitHub              (1 min)
@@ -304,6 +319,7 @@ Total: 3 minutes
 ### Daily Commands
 
 **Start Development:**
+
 ```powershell
 cd C:\Users\YourUsername\bitburner\bitburner-remote-api
 npm run watch:remote
@@ -311,6 +327,7 @@ npm run watch:remote
 ```
 
 **Copy Changes to GitHub:**
+
 ```powershell
 Copy-Item -Recurse -Force bitburner-remote-api\src\analysis\* scripts\analysis\
 cd scripts
@@ -318,6 +335,7 @@ cd scripts
 ```
 
 **Reconnect After Sleep:**
+
 ```
 In Bitburner: Options → Remote API → Connect
 ```
@@ -350,6 +368,7 @@ Then you have version control in BOTH places!
 Create a helper script to sync between workspaces:
 
 **sync-to-github.ps1:**
+
 ```powershell
 # Copy Remote API changes to GitHub repo
 $remoteAPI = "C:\Users\YourUsername\bitburner\bitburner-remote-api\src"
@@ -387,11 +406,13 @@ Those TypeScript warnings in the console? Ignore them completely. Your JavaScrip
 ### Files Not Syncing
 
 **Check:**
+
 1. Is `npm run watch:remote` still running?
 2. Does Bitburner show "Connected"?
 3. Is file saved in `src/` folder?
 
 **Fix:**
+
 - Reconnect: Options → Remote API → Connect
 - Restart server if needed
 
@@ -399,6 +420,7 @@ Those TypeScript warnings in the console? Ignore them completely. Your JavaScrip
 
 **Cause:** File might be cached  
 **Fix:** In Bitburner, try:
+
 ```bash
 run test-remote.js  # Run once to clear cache
 ```
@@ -406,6 +428,7 @@ run test-remote.js  # Run once to clear cache
 ### Can't Find File in Bitburner
 
 **Check:**
+
 - Use `ls` to see what's there
 - Verify filename matches exactly
 - Check if file is in subfolder: `ls analysis/`
@@ -431,11 +454,13 @@ Daily workflow mastered when you can:
 - **Test Plan:** `REMOTE_API_TEST_PLAN.md`
 - **Troubleshooting:** `REMOTE_API_TROUBLESHOOTING.md`
 - **Quick Setup Card:** `REMOTE_API_QUICKSTART.txt`
-- **Official Docs:** [Remote API Specification](https://github.com/bitburner-official/bitburner-src/blob/dev/src/Documentation/doc/en/programming/remote_api.md)
+- **Official Docs:**
+  [Remote API Specification](https://github.com/bitburner-official/bitburner-src/blob/dev/src/Documentation/doc/en/programming/remote_api.md)
 
 ---
 
-**Remember:** 
+**Remember:**
+
 - Remote API = Fast development
 - GitHub = Safety and sharing
 - Together = Best workflow! 🚀
@@ -443,4 +468,3 @@ Daily workflow mastered when you can:
 **Version:** 1.0.0  
 **Last Updated:** 2025-10-26  
 **Status:** Production Ready
-

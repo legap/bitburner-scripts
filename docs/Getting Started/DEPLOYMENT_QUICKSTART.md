@@ -30,12 +30,14 @@ Run this in PowerShell from your project directory:
 ## Step 3: Upload Files (1 minute)
 
 ### Easy Way (Drag & Drop):
+
 1. Open your new repo on GitHub
 2. Click **"uploading an existing file"**
 3. **Drag all files** from `bitburner-github/` folder
 4. **Commit**: "Initial upload"
 
 ### Git Way (If you prefer):
+
 ```bash
 cd bitburner-github
 git init
@@ -87,6 +89,7 @@ run bitburner-update.js --all
 ## ✅ Done!
 
 You should see:
+
 ```
 === Bitburner Script Update ===
 ✓ attack-hack.js
@@ -138,16 +141,19 @@ run simple-batcher.js joesguns
 ## Troubleshooting
 
 ### "Download failed"
+
 - ✓ Check your baseUrl in bitburner-update.js
 - ✓ Make sure you uploaded all files to GitHub
 - ✓ Verify the URL works in a browser
 
 ### "File not found"
+
 - ✓ Files must be in repo root (not in folders)
 - ✓ Filenames are case-sensitive
 - ✓ Branch should be `main` (not `master`)
 
 ### "Cannot read property"
+
 - ✓ Run `run bitburner-update.js --all` again
 - ✓ Kill old scripts: `run global-kill.js`
 
@@ -156,6 +162,7 @@ run simple-batcher.js joesguns
 ## 🎉 Success!
 
 Your Bitburner scripts are now:
+
 - ✅ Version controlled on GitHub
 - ✅ Auto-updatable from anywhere
 - ✅ Backed up in the cloud

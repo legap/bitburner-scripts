@@ -6,14 +6,17 @@
 
 ## Overview
 
-Complete rewrite of `home-batcher.js` with enterprise-grade error handling and diagnostic capabilities. Fixed critical silent failure bug and added comprehensive RAM conflict detection.
+Complete rewrite of `home-batcher.js` with enterprise-grade error handling and diagnostic capabilities. Fixed critical
+silent failure bug and added comprehensive RAM conflict detection.
 
 ---
 
 ## Critical Bug Fixed 🐛
 
 ### The Problem
+
 **Original Behavior**:
+
 - Script would calculate threads for all 3 helper scripts (weaken, grow, hack)
 - Started scripts sequentially without checking remaining RAM
 - If RAM ran out after starting weaken/grow, hack script would fail silently
@@ -23,6 +26,7 @@ Complete rewrite of `home-batcher.js` with enterprise-grade error handling and d
 **Impact**: Users thought their batch system was working but weren't generating income.
 
 ### The Solution
+
 - Check available RAM **before each script execution**
 - Report exact failures with RAM needed vs available
 - Show clear success/failure summary
@@ -43,6 +47,7 @@ Detects and warns about other scripts competing for RAM:
 ```
 
 **Benefits**:
+
 - Explains why RAM might be limited
 - Helps users understand the environment
 - Suggests potential conflicts before they happen
@@ -58,6 +63,7 @@ Thread allocation: h71/g128/w87 (286 total)
 ```
 
 **Benefits**:
+
 - Transparency into RAM planning
 - Shows total vs free RAM
 - Displays thread distribution
@@ -73,6 +79,7 @@ Reports exactly what failed and why:
 ```
 
 **Benefits**:
+
 - No more silent failures
 - Exact RAM shortfall shown
 - User knows what didn't start
@@ -95,6 +102,7 @@ if (checkRam >= neededRam) {
 ```
 
 **Benefits**:
+
 - Catches RAM exhaustion at any point
 - Prevents partial batch execution
 - Maintains data integrity
@@ -114,6 +122,7 @@ or
 ```
 
 **Benefits**:
+
 - Users know exact status
 - Helpful next steps provided
 - Professional formatted output
@@ -125,18 +134,21 @@ or
 ### Code Structure
 
 1. **Conflict Detection** (Lines 25-42)
+
    - Scans running processes
    - Filters out helper scripts and self
    - Lists up to 5 conflicting scripts
    - Shows thread counts
 
 2. **RAM Validation** (Lines 52-98)
+
    - Gets current RAM status
    - Calculates per-script requirements
    - Uses worst-case (max) RAM for planning
    - Pre-validates total needed vs available
 
 3. **Script Execution** (Lines 126-187)
+
    - Sequential execution: weaken → grow → hack
    - RAM check before each exec()
    - Explicit PID validation (> 0)
@@ -150,6 +162,7 @@ or
 ### Key Improvements
 
 **Before**:
+
 ```javascript
 // Old code - no RAM checks, silent failures
 const pid = ns.exec(hackScript, host, hackThreads, target);
@@ -158,6 +171,7 @@ if (pid > 0) ns.tprint(`Started ${hackScript}`);
 ```
 
 **After**:
+
 ```javascript
 // New code - explicit RAM checking
 const checkRam = ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
@@ -190,6 +204,7 @@ if (checkRam >= neededHackRam) {
 ```
 
 **Output**:
+
 ```
 ═══════════════════════════════════════════════════
   HOME BATCHER: foodnstuff
@@ -231,16 +246,19 @@ Starting helper scripts...
 ## Testing Results
 
 ### Test 1: Clean Environment ✅
+
 - **Setup**: Fresh home server, no other scripts
 - **Result**: All 3 scripts started successfully
 - **Validation**: PID tracking confirmed all running
 
 ### Test 2: RAM Competition ✅
+
 - **Setup**: batch-manager.js using 506GB
 - **Result**: Clear error message with exact RAM shortage
 - **Validation**: No scripts started (proper fail-safe)
 
 ### Test 3: Partial RAM Availability ✅
+
 - **Setup**: Enough for 2 scripts but not 3
 - **Result**: Reported partial success with recommendations
 - **Validation**: User knows exactly what failed
@@ -250,12 +268,14 @@ Starting helper scripts...
 ## Impact Assessment
 
 ### Before Enhancement
+
 - ❌ Silent failures were common
 - ❌ Users confused why no money generated
 - ❌ No diagnostic information
 - ❌ Troubleshooting required code inspection
 
 ### After Enhancement
+
 - ✅ 100% transparency on all operations
 - ✅ Clear failure explanations
 - ✅ Actionable recommendations
@@ -267,10 +287,12 @@ Starting helper scripts...
 ## Related Files
 
 **Updated Files**:
+
 - `bitburner-remote-api/src/batch/home-batcher.js`
 - `scripts/batch/home-batcher.js`
 
 **Documentation Updated**:
+
 - CHANGELOG.md (v1.4.4 entry)
 - README.md (version history)
 - QUICK_REFERENCE.md (batch section)
@@ -287,11 +309,13 @@ Starting helper scripts...
 ### For Users
 
 **Use home-batcher.js when:**
+
 - You want detailed diagnostics about RAM usage
 - You need to troubleshoot batch operation issues
 - You want transparency into what's happening
 
 **Use batch-manager.js when:**
+
 - You want "set it and forget it" automation
 - You need auto-scaling across purchased servers
 - You want automatic rooting integration
@@ -299,6 +323,7 @@ Starting helper scripts...
 ### For Developers
 
 **Key Lessons**:
+
 1. Always validate exec() return values
 2. Check RAM before each critical operation
 3. Provide detailed failure messages
@@ -312,14 +337,17 @@ Starting helper scripts...
 Potential improvements for future versions:
 
 1. **Dynamic Thread Adjustment**
+
    - Automatically reduce threads if RAM insufficient
    - Progressive scaling instead of all-or-nothing
 
 2. **RAM Reservation System**
+
    - Reserve RAM upfront for all scripts
    - Prevent race conditions with other scripts
 
 3. **Integration with batch-manager.js**
+
    - Detect when batch-manager is running
    - Offer to use that system instead
 
@@ -331,10 +359,10 @@ Potential improvements for future versions:
 
 ## Conclusion
 
-The enhanced home-batcher.js represents a significant improvement in user experience and reliability. By eliminating silent failures and providing comprehensive diagnostics, users now have complete visibility into their batch operations.
+The enhanced home-batcher.js represents a significant improvement in user experience and reliability. By eliminating
+silent failures and providing comprehensive diagnostics, users now have complete visibility into their batch operations.
 
 **Version**: 1.4.4  
 **Status**: Production-Ready ✅  
 **Testing**: Complete ✅  
 **Documentation**: Complete ✅
-

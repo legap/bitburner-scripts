@@ -41,17 +41,20 @@ npm --version
 Node.js isn't installed. Download and install it:
 
 1. **Download Node.js**
+
    - Go to: https://nodejs.org/
    - Download: **LTS version** (Long Term Support)
    - Choose: **Windows Installer (.msi)** 64-bit
 
 2. **Install Node.js**
+
    - Run the installer
    - **IMPORTANT**: Check "Add to PATH" during installation
    - Accept all defaults
    - Click Install
 
 3. **Restart PowerShell**
+
    - Close ALL PowerShell windows
    - Open a NEW PowerShell window
    - The PATH changes will now be active
@@ -115,6 +118,7 @@ $nodePath = Get-ChildItem -Path C:\ -Filter node.exe -Recurse -ErrorAction Silen
 ## Still Having Issues?
 
 If none of the above works, it might be:
+
 1. **Conda environment conflict** (you have `(base)` in your prompt)
 2. **Windows Store version** of Node.js (problematic)
 3. **Permission issues**
@@ -139,4 +143,3 @@ If Node.js was installed via Windows Store, uninstall it and use the official in
 ---
 
 **After fixing Node.js PATH, proceed with Phase 2 of REMOTE_API_TEST_PLAN.md**
-

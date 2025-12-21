@@ -7,6 +7,7 @@ Fast reference for common operations and documentation locations.
 **🆕 New Game or Post-Augmentation?** See [NEW_GAME_QUICKSTART.md](NEW_GAME_QUICKSTART.md) for fastest recovery path!
 
 ### ⭐ RECOMMENDED: Smart Batcher (490x Performance!)
+
 ```bash
 # Find best target by POTENTIAL (find hidden gems!)
 run analysis/profit-scan-flex.js --optimal
@@ -22,6 +23,7 @@ run analysis/production-monitor.js 60
 ```
 
 ### 🔮 FORMULAS.EXE ENHANCED (Perfect Accuracy!)
+
 ```bash
 # EXACT target rankings (requires Formulas.exe $5b)
 run analysis/f-profit-scan-flex.js --optimal
@@ -33,6 +35,7 @@ run analysis/f-estimate-production.js silver-helix
 ```
 
 ### Basic Commands
+
 ```bash
 # Find profitable targets
 run analysis/profit-scan.js
@@ -49,27 +52,29 @@ run utils/list-procs.js
 
 ## 📁 File Locations
 
-| What You Need | File Location | Lines |
-|---------------|---------------|-------|
-| Fresh start / augmentation recovery | NEW_GAME_QUICKSTART.md | All 🆕 |
-| Project overview | README.md | Top |
-| Getting started | docs/GETTING_STARTED.md | All |
-| Script usage | docs/SCRIPT_REFERENCE.md | Find script |
-| Error handling | docs/ERROR_HANDLING_IMPROVEMENTS.md | All |
-| Changes made | docs/DETAILED_CHANGES.md | Find script |
-| Version history | CHANGELOG.md | All |
-| Doc index | docs/DOCUMENTATION_INDEX.md | All |
+| What You Need                       | File Location                       | Lines       |
+| ----------------------------------- | ----------------------------------- | ----------- |
+| Fresh start / augmentation recovery | NEW_GAME_QUICKSTART.md              | All 🆕      |
+| Project overview                    | README.md                           | Top         |
+| Getting started                     | docs/GETTING_STARTED.md             | All         |
+| Script usage                        | docs/SCRIPT_REFERENCE.md            | Find script |
+| Error handling                      | docs/ERROR_HANDLING_IMPROVEMENTS.md | All         |
+| Changes made                        | docs/DETAILED_CHANGES.md            | Find script |
+| Version history                     | CHANGELOG.md                        | All         |
+| Doc index                           | docs/DOCUMENTATION_INDEX.md         | All         |
 
 ## 🔧 Script Locations by Purpose
 
 ### Core Operations
+
 ```
 core/attack-hack.js       # Basic hack
-core/attack-grow.js       # Basic grow  
+core/attack-grow.js       # Basic grow
 core/attack-weaken.js     # Basic weaken
 ```
 
 ### Batch Management
+
 ```
 batch/smart-batcher.js    # ⭐ Optimal timing-based ratios (490x faster!)
 batch/simple-batcher.js   # Deploy to all servers (basic)
@@ -78,6 +83,7 @@ batch/home-batcher.js     # Home server batching
 ```
 
 ### Analysis
+
 ```
 analysis/profit-scan.js          # Find best targets
 analysis/profit-scan-flex.js     # Enhanced target scanner
@@ -86,6 +92,7 @@ analysis/production-monitor.js   # Track production
 ```
 
 ### Utilities
+
 ```
 utils/global-kill.js       # Kill all scripts
 utils/list-procs.js        # List processes
@@ -98,6 +105,7 @@ utils/test-formulas.js     # Test Formulas.exe installation
 ```
 
 ### Deployment
+
 ```
 deploy/auto-expand.js            # Root & deploy to all servers
 deploy/purchase-server-8gb.js    # Buy server
@@ -109,6 +117,7 @@ deploy/deploy-share-all.js       # Deploy RAM sharing to all servers
 ```
 
 ### Stock Trading (TIX API) 📈
+
 ```
 stocks/stock-info.js             # View market data & portfolio
 stocks/stock-trader-basic.js     # Simple automated trading (forecast)
@@ -121,17 +130,18 @@ stocks/close-all-stock.js        # Close ALL positions & liquidate portfolio �
 
 ## 📊 Key Improvements Reference
 
-| Improvement | Example Location |
-|-------------|------------------|
-| Structured logging | batch/simple-batcher.js:45-49 |
-| Error handling | deploy/deploy-hack-joesguns.js:43-79 |
-| Validation | batch/simple-batcher.js:58-63 |
-| Success tracking | deploy/deploy-hack-joesguns.js:36-37 |
-| RAM validation | batch/simple-batcher.js:163-166 |
+| Improvement        | Example Location                     |
+| ------------------ | ------------------------------------ |
+| Structured logging | batch/simple-batcher.js:45-49        |
+| Error handling     | deploy/deploy-hack-joesguns.js:43-79 |
+| Validation         | batch/simple-batcher.js:58-63        |
+| Success tracking   | deploy/deploy-hack-joesguns.js:36-37 |
+| RAM validation     | batch/simple-batcher.js:163-166      |
 
 ## 🎯 Common Tasks
 
 ### Setup
+
 ```bash
 1. Read README.md
 2. Follow docs/GETTING_STARTED.md
@@ -139,6 +149,7 @@ stocks/close-all-stock.js        # Close ALL positions & liquidate portfolio �
 ```
 
 ### Stock Trading
+
 ```bash
 # View market overview
 run stocks/stock-info.js
@@ -159,12 +170,14 @@ run stocks/stock-monitor.js
 ```
 
 ### Find Best Target
+
 ```bash
 run analysis/profit-scan.js
 # Look at top results
 ```
 
 ### Deploy Batch System
+
 ```bash
 # Recommended: Smart Batcher (490x faster!)
 run batch/smart-batcher.js joesguns
@@ -177,6 +190,7 @@ run batch/simple-batcher.js joesguns 100 --quiet
 ```
 
 ### Upgrade Purchased Servers
+
 ```bash
 # Step 1: Check upgrade options
 run deploy/replace-pservs-no-copy.js              # Shows costs & options
@@ -191,12 +205,14 @@ run batch/batch-manager.js joesguns --quiet       # Restart batch manager (uses 
 ```
 
 ### Monitor Performance
+
 ```bash
 run analysis/production-monitor.js 300
 run utils/list-procs.js
 ```
 
 ### Troubleshoot
+
 ```bash
 run utils/list-procs.js        # See what's running
 run utils/global-kill.js       # Stop everything
@@ -205,22 +221,22 @@ run batch/simple-batcher.js target  # Restart
 
 ## 📖 Documentation Quick Links
 
-| Need | File | Section |
-|------|------|---------|
-| Setup | docs/GETTING_STARTED.md | Quick Setup |
-| Script usage | docs/SCRIPT_REFERENCE.md | Find script name |
-| Error fix | docs/ERROR_HANDLING_IMPROVEMENTS.md | Search error type |
-| Code change | docs/DETAILED_CHANGES.md | Find script name |
-| Version info | CHANGELOG.md | v1.0.0 |
+| Need         | File                                | Section           |
+| ------------ | ----------------------------------- | ----------------- |
+| Setup        | docs/GETTING_STARTED.md             | Quick Setup       |
+| Script usage | docs/SCRIPT_REFERENCE.md            | Find script name  |
+| Error fix    | docs/ERROR_HANDLING_IMPROVEMENTS.md | Search error type |
+| Code change  | docs/DETAILED_CHANGES.md            | Find script name  |
+| Version info | CHANGELOG.md                        | v1.0.0            |
 
 ## 🔍 Error Handling Locations
 
-| Script | Logging Lines | Error Handling Lines |
-|--------|--------------|---------------------|
-| simple-batcher.js | 45-49 | 124-135, 137-155 |
-| batch-manager.js | 40-42 | 68-86, 88-95 |
-| purchase-server-8gb.js | 15-16 | 18-26, 36-41 |
-| deploy-hack-joesguns.js | N/A | 43-79 |
+| Script                  | Logging Lines | Error Handling Lines |
+| ----------------------- | ------------- | -------------------- |
+| simple-batcher.js       | 45-49         | 124-135, 137-155     |
+| batch-manager.js        | 40-42         | 68-86, 88-95         |
+| purchase-server-8gb.js  | 15-16         | 18-26, 36-41         |
+| deploy-hack-joesguns.js | N/A           | 43-79                |
 
 ## 📝 Documentation Statistics
 
@@ -233,17 +249,20 @@ run batch/simple-batcher.js target  # Restart
 ## 🎉 Quick Wins
 
 ### New Users
+
 1. README.md (5 min read)
 2. Run analysis/profit-scan.js
 3. Run batch/simple-batcher.js target
 4. Watch analysis/production-monitor.js
 
 ### Experienced Users
+
 1. docs/SCRIPT_REFERENCE.md for lookups
 2. Use quiet mode: --quiet
 3. Check docs/ERROR_HANDLING_IMPROVEMENTS.md for debugging
 
 ### Developers
+
 1. docs/DETAILED_CHANGES.md for implementation
 2. docs/ERROR_HANDLING_IMPROVEMENTS.md for patterns
 3. CHANGELOG.md for history

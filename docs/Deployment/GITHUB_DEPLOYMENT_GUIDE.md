@@ -18,12 +18,14 @@ Complete guide to deploying your Bitburner scripts via GitHub and the Remote Fil
 ## Prerequisites
 
 ### What You Need
+
 - ✅ GitHub account (free)
 - ✅ Bitburner game running
 - ✅ This script collection on your local machine
 - ✅ Basic familiarity with GitHub (or follow along!)
 
 ### What's Included
+
 - ✅ Private repos are **FREE** on GitHub (unlimited!)
 - ✅ No subscription needed for basic setup
 - ✅ Version control for your scripts
@@ -48,7 +50,8 @@ Complete guide to deploying your Bitburner scripts via GitHub and the Remote Fil
 
 ### Step 2: Push Your Organized Structure to GitHub
 
-**Good news!** You DON'T need to flatten your folder structure. The PowerShell script will push your organized folders directly to GitHub, and `bitburner-update.js` will handle the flattening automatically when downloading to Bitburner.
+**Good news!** You DON'T need to flatten your folder structure. The PowerShell script will push your organized folders
+directly to GitHub, and `bitburner-update.js` will handle the flattening automatically when downloading to Bitburner.
 
 #### Option A: PowerShell Push (Recommended) 🌟
 
@@ -59,6 +62,7 @@ Use the included PowerShell script to push your organized structure:
 ```
 
 **What it does:**
+
 - ✅ Pushes your organized folder structure (core/, batch/, analysis/, etc.)
 - ✅ Creates .gitignore automatically
 - ✅ Initializes Git repository
@@ -66,6 +70,7 @@ Use the included PowerShell script to push your organized structure:
 - ✅ Shows your GitHub raw URL for configuration
 
 **Your GitHub repo will look like:**
+
 ```
 bitburner-scripts/
 ├── core/
@@ -87,6 +92,7 @@ bitburner-scripts/
 ```
 
 **In Bitburner (auto-flattened):**
+
 ```
 home/
 ├── attack-hack.js
@@ -131,6 +137,7 @@ The PowerShell script will show you this automatically, or you can get it manual
    ```
 
 **Important Notes:**
+
 - ✅ Works with **private** repos (GitHub authenticates automatically)
 - ✅ Use the **raw.githubusercontent.com** URL (not regular github.com)
 - ✅ Include the branch name (usually `main`)
@@ -160,7 +167,8 @@ The `bitburner-update.js` file is already created in your project and configured
    .\Push-ToGitHub.ps1 -RepoUrl "YOUR_URL" -CommitMessage "Configure update script"
    ```
 
-**Note:** The update script is already configured to read from organized folders (core/, batch/, analysis/, utils/, deploy/) and save flat to Bitburner home. No additional configuration needed!
+**Note:** The update script is already configured to read from organized folders (core/, batch/, analysis/, utils/,
+deploy/) and save flat to Bitburner home. No additional configuration needed!
 
 ---
 
@@ -177,6 +185,7 @@ Since this is your first time, you need to manually copy `bitburner-update.js` i
 5. **Exit**: Ctrl+C
 
 **Alternative Method - Using wget directly:**
+
 ```bash
 wget https://raw.githubusercontent.com/YOUR_USERNAME/bitburner-scripts/main/bitburner-update.js bitburner-update.js
 ```
@@ -190,6 +199,7 @@ run bitburner-update.js --all
 ```
 
 You should see:
+
 ```
 === Bitburner Script Update ===
 Base URL: https://raw.githubusercontent.com/...
@@ -208,11 +218,13 @@ Failed: 0
 Total: 18
 ```
 
-**Note:** Scripts are downloaded from organized folders (e.g., `core/attack-hack.js`) but saved flat to your Bitburner home directory!
+**Note:** Scripts are downloaded from organized folders (e.g., `core/attack-hack.js`) but saved flat to your Bitburner
+home directory!
 
 ### Step 3: Verify Installation
 
 Check that scripts are installed:
+
 ```bash
 ls
 ```
@@ -245,19 +257,23 @@ run bitburner-update.js --essential --utils
 ### Script Categories
 
 **Essential** (downloaded by default):
+
 - attack-hack.js, attack-grow.js, attack-weaken.js
 - simple-batcher.js
 - profit-scan.js
 - production-monitor.js
 
 **Batch**:
+
 - batch-manager.js
 
 **Utils**:
+
 - global-kill.js, list-procs.js, list-pservs.js
 - server-info.js, estimate-production.js
 
 **Deploy**:
+
 - auto-deploy-all.js, purchase-server-8gb.js
 - replace-pservs-no-copy.js, home-batcher.js
 - deploy-hack-joesguns.js, hack-joesguns.js, hack-n00dles.js
@@ -281,12 +297,14 @@ run bitburner-update.js --essential --utils
 ### Error: "Download failed"
 
 **Possible Causes:**
+
 1. **Incorrect URL** - Check your baseUrl in bitburner-update.js
 2. **Wrong branch** - Make sure you're using `main` (not `master`)
 3. **Incorrect folder structure** - Files should be in organized folders (core/, batch/, etc.)
 4. **Typo in filename** - Filenames are case-sensitive
 
 **Solution:**
+
 ```bash
 # Test URL manually in browser (note the folder path)
 https://raw.githubusercontent.com/YOUR_USERNAME/bitburner-scripts/main/core/attack-hack.js
@@ -298,11 +316,13 @@ https://raw.githubusercontent.com/YOUR_USERNAME/bitburner-scripts/main/core/atta
 ### Error: "Repository not found"
 
 **For Private Repos:**
+
 - ✅ Private repos work with raw.githubusercontent.com
 - ✅ GitHub handles authentication automatically
 - ❌ If you see this error, check spelling of username/repo
 
 **Solution:**
+
 1. Verify repo name on GitHub
 2. Check username spelling
 3. Ensure repo is created and has files
@@ -312,6 +332,7 @@ https://raw.githubusercontent.com/YOUR_USERNAME/bitburner-scripts/main/core/atta
 **Cause:** Script syntax error or incomplete download
 
 **Solution:**
+
 ```bash
 # Re-download the specific file
 run bitburner-update.js --all
@@ -325,6 +346,7 @@ nano problem-script.js
 **Cause:** Old scripts may be running from before update
 
 **Solution:**
+
 ```bash
 # Kill all running scripts
 run global-kill.js
@@ -338,6 +360,7 @@ run simple-batcher.js joesguns
 **Cause:** Typo in manual wget command
 
 **Solution:**
+
 1. **Delete the broken file**: `rm bitburner-update.js`
 2. **Try again** with correct URL
 3. **Or manually paste** the script using `nano`
@@ -356,7 +379,7 @@ export async function main(ns) {
   // Update scripts
   await ns.run("bitburner-update.js", 1, "--essential");
   await ns.sleep(5000); // Wait for updates
-  
+
   // Start your automation
   await ns.run("profit-scan.js");
   await ns.run("simple-batcher.js", 1, "joesguns", "--quiet");
@@ -368,6 +391,7 @@ Then in Bitburner settings, set this as your startup script.
 ### Version Control Best Practices
 
 1. **Create a .gitignore** in your GitHub repo:
+
    ```
    # Don't commit these
    *.log
@@ -376,6 +400,7 @@ Then in Bitburner settings, set this as your startup script.
    ```
 
 2. **Use meaningful commit messages**:
+
    ```bash
    git commit -m "Fixed RAM calculation in simple-batcher.js"
    git commit -m "Added new server-info.js utility"
@@ -395,11 +420,13 @@ Then in Bitburner settings, set this as your startup script.
 You can maintain different script versions:
 
 **Production** (main branch):
+
 ```javascript
 const baseUrl = "https://raw.githubusercontent.com/user/repo/main";
 ```
 
 **Development** (dev branch):
+
 ```javascript
 const baseUrl = "https://raw.githubusercontent.com/user/repo/dev";
 ```
@@ -443,6 +470,7 @@ const baseUrl = "https://raw.githubusercontent.com/user/repo/dev";
 ## Summary Checklist
 
 ### GitHub Setup ✓
+
 - [ ] Created GitHub account
 - [ ] Created repository (private or public)
 - [ ] Ran Push-ToGitHub.ps1 with -FirstTime flag
@@ -451,6 +479,7 @@ const baseUrl = "https://raw.githubusercontent.com/user/repo/dev";
 - [ ] Pushed updated bitburner-update.js to GitHub
 
 ### Bitburner Setup ✓
+
 - [ ] Copied bitburner-update.js to game
 - [ ] Updated the baseUrl in the script
 - [ ] Ran first update: `run bitburner-update.js --all`
@@ -458,6 +487,7 @@ const baseUrl = "https://raw.githubusercontent.com/user/repo/dev";
 - [ ] Tested a script (e.g., profit-scan.js)
 
 ### Workflow ✓
+
 - [ ] Know how to edit scripts locally (in organized folders)
 - [ ] Know how to push to GitHub (.\Push-ToGitHub.ps1)
 - [ ] Know how to update in game (run bitburner-update.js --all)
@@ -469,6 +499,7 @@ const baseUrl = "https://raw.githubusercontent.com/user/repo/dev";
 **Congratulations!** 🎉 Your Bitburner scripts are now version-controlled and auto-updatable via GitHub!
 
 **Next Steps:**
+
 1. Try editing a script locally
 2. Push to GitHub
 3. Update in Bitburner

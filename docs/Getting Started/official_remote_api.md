@@ -1,6 +1,8 @@
 # Remote API
 
-Bitburner can connect to a WebSocket server, and then that server can read and write Bitburner data via some APIs. The most common usage of this feature is to synchronize files between Bitburner and an external system. With a Remote API tool, you can write your scripts in any text editor and synchronize your scripts with Bitburner.
+Bitburner can connect to a WebSocket server, and then that server can read and write Bitburner data via some APIs. The
+most common usage of this feature is to synchronize files between Bitburner and an external system. With a Remote API
+tool, you can write your scripts in any text editor and synchronize your scripts with Bitburner.
 
 You only need to do 2 things:
 
@@ -9,7 +11,8 @@ You only need to do 2 things:
 
 ## Community tools
 
-All these tools support synchronizing scripts to Bitburner and transpiling TypeScript/JSX to JavaScript. Note that Bitburner has native support for TypeScript/JSX.
+All these tools support synchronizing scripts to Bitburner and transpiling TypeScript/JSX to JavaScript. Note that
+Bitburner has native support for TypeScript/JSX.
 
 Links:
 
@@ -17,15 +20,21 @@ Links:
 - https://github.com/Tanimodori/viteburner
 - https://github.com/shyguy1412/bb-external-editor
 
-`typescript-template` has a small set of options and features. Its simplicity is by design. `viteburner` and `bb-external-editor` have more fancy features.
+`typescript-template` has a small set of options and features. Its simplicity is by design. `viteburner` and
+`bb-external-editor` have more fancy features.
 
 ## Troubleshooting tips
 
 - Try to update the tool and restart it. Check error messages printed in the terminal to see what went wrong.
-- When you turn off your machine or put it in sleep mode, the connection between Bitburner and the tool is closed. You have to connect again.
-- Some external programs or browser extensions may interfere with the connection. For example, some antivirus programs and ad-blocker extensions may block the WebSocket connection.
-- Some tools support a feature that is usually called "mirroring". You must read the instructions carefully before using it. This feature allows 2-way sync, but it may overwrite your scripts or other files _on your machine_ if you set it up wrong.
-- If you need further help, please ask us on the [external-editors](https://discord.com/channels/415207508303544321/923428435618058311) channel.
+- When you turn off your machine or put it in sleep mode, the connection between Bitburner and the tool is closed. You
+  have to connect again.
+- Some external programs or browser extensions may interfere with the connection. For example, some antivirus programs
+  and ad-blocker extensions may block the WebSocket connection.
+- Some tools support a feature that is usually called "mirroring". You must read the instructions carefully before using
+  it. This feature allows 2-way sync, but it may overwrite your scripts or other files _on your machine_ if you set it
+  up wrong.
+- If you need further help, please ask us on the
+  [external-editors](https://discord.com/channels/415207508303544321/923428435618058311) channel.
 
 ## How it works
 

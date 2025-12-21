@@ -14,32 +14,32 @@ function formatMoney(ns, value, format) {
   // 1. Try ns.formatNumber() (v3.0.0+ method)
   // 2. Fall back to ns.nFormat() (v2.8.1 method - deprecated)
   // 3. Manual formatting fallback
-  
+
   try {
     if (ns.formatNumber) {
       return ns.formatNumber(value, format);
     }
   } catch (e) {}
-  
+
   try {
     if (ns.nFormat) {
       return ns.nFormat(value, format);
     }
   } catch (e) {}
-  
+
   // Manual formatting fallback
-  const units = ['', 'k', 'm', 'b', 't', 'q', 'Q', 's', 'S', 'o', 'n'];
+  const units = ["", "k", "m", "b", "t", "q", "Q", "s", "S", "o", "n"];
   let unitIndex = 0;
   let num = Math.abs(value);
-  
+
   while (num >= 1000 && unitIndex < units.length - 1) {
     num /= 1000;
     unitIndex++;
   }
-  
-  const decimals = format.includes('.00') ? 2 : format.includes('.000') ? 3 : 0;
+
+  const decimals = format.includes(".00") ? 2 : format.includes(".000") ? 3 : 0;
   const formatted = num.toFixed(decimals) + units[unitIndex];
-  return (value < 0 ? '-$' : '$') + formatted;
+  return (value < 0 ? "-$" : "$") + formatted;
 }
 
 /** @param {NS} ns */
@@ -96,6 +96,10 @@ export async function main(ns) {
   ns.tprint("Top targets by expected money/sec per thread:");
   ns.tprint("server | rooted | RAM | maxMoney | minSec | hackTime(ms) | hackChance | $/s/thread");
   for (const r of rows.slice(0, 30)) {
-    ns.tprint(`${r.server} | ${r.rooted ? "YES" : "NO " } | ${r.ram}GB | ${formatMoney(ns, r.maxMoney, "$0.00a")} | ${r.minSec} | ${r.hackTimeMs} | ${r.hackChance} | ${formatMoney(ns, r.perThreadPerSec, "$0.000a")}`);
+    ns.tprint(
+      `${r.server} | ${r.rooted ? "YES" : "NO "} | ${r.ram}GB | ${formatMoney(ns, r.maxMoney, "$0.00a")} | ${
+        r.minSec
+      } | ${r.hackTimeMs} | ${r.hackChance} | ${formatMoney(ns, r.perThreadPerSec, "$0.000a")}`
+    );
   }
 }

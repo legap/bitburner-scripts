@@ -6,7 +6,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
   const target = ns.args[0] || "joesguns";
-  
+
   ns.disableLog("sleep");
   ns.disableLog("getServerMaxRam");
   ns.disableLog("getServerUsedRam");
@@ -24,11 +24,8 @@ export async function main(ns) {
 
   // Check for other running scripts that might compete for RAM
   const procs = ns.ps(host);
-  const otherScripts = procs.filter(p => 
-    !helpers.includes(p.filename) && 
-    p.filename !== "batch/home-batcher.js"
-  );
-  
+  const otherScripts = procs.filter((p) => !helpers.includes(p.filename) && p.filename !== "batch/home-batcher.js");
+
   if (otherScripts.length > 0) {
     ns.tprint(`⚠ WARNING: ${otherScripts.length} other script(s) running on home:`);
     for (const p of otherScripts.slice(0, 5)) {
@@ -67,7 +64,7 @@ export async function main(ns) {
   // Use the largest RAM requirement for thread calculation
   const ramPerThread = Math.max(hackRam, growRam, weakenRam);
   const threads = Math.floor(freeRam / ramPerThread);
-  
+
   if (threads < 3) {
     ns.tprint(`✗ ERROR: Insufficient RAM for minimum operation`);
     ns.tprint(`  Available: ${freeRam.toFixed(2)}GB`);
@@ -82,7 +79,7 @@ export async function main(ns) {
   const weakenThreads = Math.max(1, threads - hackThreads - growThreads);
 
   // Calculate actual RAM needed
-  const neededRam = (hackThreads * hackRam) + (growThreads * growRam) + (weakenThreads * weakenRam);
+  const neededRam = hackThreads * hackRam + growThreads * growRam + weakenThreads * weakenRam;
 
   ns.tprint(`Available RAM: ${freeRam.toFixed(2)}GB / ${maxRam.toFixed(2)}GB`);
   ns.tprint(`Needed RAM: ${neededRam.toFixed(2)}GB`);
@@ -119,7 +116,7 @@ export async function main(ns) {
   // Start helpers with explicit error checking
   ns.tprint("");
   ns.tprint("Starting helper scripts...");
-  
+
   let startedCount = 0;
   let failedCount = 0;
 
@@ -127,7 +124,7 @@ export async function main(ns) {
   if (weakenThreads > 0) {
     const checkRam = ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
     const neededWeakenRam = weakenThreads * weakenRam;
-    
+
     if (checkRam >= neededWeakenRam) {
       const pid = ns.exec(weakenScript, host, weakenThreads, target);
       if (pid > 0) {
@@ -148,7 +145,7 @@ export async function main(ns) {
   if (growThreads > 0) {
     const checkRam = ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
     const neededGrowRam = growThreads * growRam;
-    
+
     if (checkRam >= neededGrowRam) {
       const pid = ns.exec(growScript, host, growThreads, target);
       if (pid > 0) {
@@ -169,7 +166,7 @@ export async function main(ns) {
   if (hackThreads > 0) {
     const checkRam = ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
     const neededHackRam = hackThreads * hackRam;
-    
+
     if (checkRam >= neededHackRam) {
       const pid = ns.exec(hackScript, host, hackThreads, target);
       if (pid > 0) {

@@ -1,9 +1,9 @@
 /** bitburner-update.js
- * 
+ *
  * Automatic update script for Bitburner Remote File API
  * Works with organized GitHub folder structure
  * Copy this file into Bitburner and customize the baseUrl
- * 
+ *
  * Usage: run bitburner-update.js [--all] [--essential] [--utils]
  */
 
@@ -13,7 +13,7 @@ export async function main(ns) {
   // CONFIGURATION - UPDATE THIS URL
   // ============================================
   const baseUrl = "https://raw.githubusercontent.com/legap/bitburner-scripts/main";
-  
+
   // Folder paths in your GitHub repo (scripts/ folder IS the repo root)
   const folders = {
     core: { url: `${baseUrl}/core`, local: "core" },
@@ -21,9 +21,9 @@ export async function main(ns) {
     analysis: { url: `${baseUrl}/analysis`, local: "analysis" },
     utils: { url: `${baseUrl}/utils`, local: "utils" },
     deploy: { url: `${baseUrl}/deploy`, local: "deploy" },
-    stocks: { url: `${baseUrl}/stocks`, local: "stocks" }
+    stocks: { url: `${baseUrl}/stocks`, local: "stocks" },
   };
-  
+
   // Define script categories with their folder locations
   const scripts = {
     essential: [
@@ -36,29 +36,30 @@ export async function main(ns) {
       { file: "profit-scan-flex.js", folder: folders.analysis },
       { file: "f-profit-scan-flex.js", folder: folders.analysis },
       { file: "production-monitor.js", folder: folders.analysis },
-      { file: "estimate-production.js", folder: folders.analysis }
+      { file: "estimate-production.js", folder: folders.analysis },
     ],
-    
+
     batch: [
       { file: "smart-batcher.js", folder: folders.batch },
       { file: "batch-manager.js", folder: folders.batch },
-      { file: "home-batcher.js", folder: folders.batch }
+      { file: "home-batcher.js", folder: folders.batch },
     ],
-    
+
     analysis: [
       { file: "estimate-production.js", folder: folders.analysis },
-      { file: "f-estimate-production.js", folder: folders.analysis }
+      { file: "f-estimate-production.js", folder: folders.analysis },
     ],
-    
+
     utils: [
+      { file: "exploits.js", folder: folders.utils },
       { file: "global-kill.js", folder: folders.utils },
       { file: "list-procs.js", folder: folders.utils },
       { file: "list-pservs.js", folder: folders.utils },
       { file: "server-info.js", folder: folders.utils },
       { file: "share-ram.js", folder: folders.utils },
-      { file: "share-local-ram.js", folder: folders.utils }
+      { file: "share-local-ram.js", folder: folders.utils },
     ],
-    
+
     deploy: [
       { file: "auto-expand.js", folder: folders.deploy },
       { file: "hack-universal.js", folder: folders.deploy },
@@ -67,9 +68,9 @@ export async function main(ns) {
       { file: "deploy-hack-joesguns.js", folder: folders.deploy },
       { file: "hack-joesguns.js", folder: folders.deploy },
       { file: "hack-n00dles.js", folder: folders.deploy },
-      { file: "deploy-share-all.js", folder: folders.deploy }
+      { file: "deploy-share-all.js", folder: folders.deploy },
     ],
-    
+
     stocks: [
       { file: "check-stock-api.js", folder: folders.stocks },
       { file: "stock-info.js", folder: folders.stocks },
@@ -78,8 +79,8 @@ export async function main(ns) {
       { file: "stock-trader-momentum.js", folder: folders.stocks },
       { file: "stock-momentum-analyzer.js", folder: folders.stocks },
       { file: "stock-monitor.js", folder: folders.stocks },
-      { file: "close-all-stock.js", folder: folders.stocks }
-    ]
+      { file: "close-all-stock.js", folder: folders.stocks },
+    ],
   };
 
   // Parse arguments
@@ -94,7 +95,7 @@ export async function main(ns) {
 
   // Determine which files to download
   let filesToDownload = [];
-  
+
   if (downloadAll) {
     filesToDownload = [
       ...scripts.essential,
@@ -102,7 +103,7 @@ export async function main(ns) {
       ...scripts.analysis,
       ...scripts.utils,
       ...scripts.deploy,
-      ...scripts.stocks
+      ...scripts.stocks,
     ];
   } else {
     if (downloadEssential) filesToDownload.push(...scripts.essential);
@@ -154,7 +155,7 @@ export async function main(ns) {
   ns.tprint(`Successful: ${successful}`);
   ns.tprint(`Failed: ${failed}`);
   ns.tprint(`Total: ${filesToDownload.length}`);
-  
+
   if (failed > 0) {
     ns.tprint("\nTroubleshooting:");
     ns.tprint("1. Check your baseUrl is correct");

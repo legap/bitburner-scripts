@@ -2,7 +2,9 @@
 
 ## What is RAM Sharing?
 
-RAM sharing is a Bitburner mechanic that allows you to share your free RAM with your faction to get a **reputation multiplier bonus**. This is incredibly useful when working on faction reputation through missions, donations, or other activities.
+RAM sharing is a Bitburner mechanic that allows you to share your free RAM with your faction to get a **reputation
+multiplier bonus**. This is incredibly useful when working on faction reputation through missions, donations, or other
+activities.
 
 ## How It Works
 
@@ -15,6 +17,7 @@ RAM sharing is a Bitburner mechanic that allows you to share your free RAM with 
 ## Quick Start
 
 ### Option 1: Deploy Everywhere (Recommended)
+
 This is the easiest way to maximize your faction reputation bonus:
 
 ```bash
@@ -22,6 +25,7 @@ run deploy/deploy-share-all.js
 ```
 
 This will:
+
 - Scan your entire network
 - Deploy RAM sharing to all rooted servers
 - Reserve 64GB on home for other operations
@@ -29,6 +33,7 @@ This will:
 - Calculate your total sharing capacity
 
 ### Option 2: Run on Specific Server
+
 If you only want to share RAM from one server:
 
 ```bash
@@ -38,6 +43,7 @@ run utils/share-ram.js
 ## When to Use RAM Sharing
 
 ✅ **Good times to share RAM:**
+
 - Working on faction missions or contracts
 - Making faction donations
 - When servers are idle (not actively hacking)
@@ -45,6 +51,7 @@ run utils/share-ram.js
 - When focusing on reputation over money
 
 ❌ **When NOT to share:**
+
 - When you need maximum hacking income
 - During intensive batch operations
 - When every GB counts for your hacking strategy
@@ -52,6 +59,7 @@ run utils/share-ram.js
 ## Understanding the Output
 
 ### deploy-share-all.js Output
+
 ```
 ============================================================
 DEPLOYING RAM SHARING ACROSS NETWORK
@@ -72,7 +80,9 @@ Total sharing threads: 200
 - **Total threads**: Your overall sharing capacity
 
 ### share-ram.js Behavior
+
 The script runs silently in the background with minimal overhead. You can verify it's running by:
+
 - Checking your process list (`ps` or `utils/list-procs.js`)
 - Observing your faction reputation multiplier increase
 - Seeing RAM usage on the target server
@@ -80,9 +90,12 @@ The script runs silently in the background with minimal overhead. You can verify
 ## RAM Management
 
 ### Home Server
-The deployment script automatically **reserves 64GB** on your home server for other operations. This ensures you can still run terminal commands and manage your network.
+
+The deployment script automatically **reserves 64GB** on your home server for other operations. This ensures you can
+still run terminal commands and manage your network.
 
 ### Other Servers
+
 All other rooted servers will use **100% of their free RAM** for sharing (minus what's needed for the script itself).
 
 ## Stopping RAM Sharing
@@ -103,13 +116,16 @@ This will kill all scripts, including RAM sharing scripts.
 
 3. **Check Your Bonus**: In the Bitburner UI, you can see your current reputation bonus multiplier
 
-4. **Redeploy When Needed**: If you've stopped other scripts and want to maximize sharing, just run the deploy script again
+4. **Redeploy When Needed**: If you've stopped other scripts and want to maximize sharing, just run the deploy script
+   again
 
-5. **Early Game Advantage**: In early game, RAM sharing can be more valuable than hacking since you have limited hacking capabilities but plenty of RAM
+5. **Early Game Advantage**: In early game, RAM sharing can be more valuable than hacking since you have limited hacking
+   capabilities but plenty of RAM
 
 ## Integration with Other Scripts
 
 RAM sharing works alongside:
+
 - **batch-manager.js**: Share RAM on servers not managed by batch-manager
 - **smart-batcher.js**: Share RAM on unused servers while batching on others
 - **hack-universal.js**: Share RAM during prep phases when servers are idle
@@ -129,7 +145,9 @@ RAM sharing works alongside:
 ## Example Scenarios
 
 ### Scenario 1: Full Network Sharing
+
 You have 10 rooted servers with 100GB each = 1000GB total available
+
 ```bash
 run deploy/deploy-share-all.js
 # Output: ~250 total instances sharing across 10 servers (25 per server)
@@ -137,8 +155,10 @@ run deploy/deploy-share-all.js
 ```
 
 ### Scenario 2: Hybrid Approach
+
 - 5 servers running smart-batcher (income)
 - 5 servers running RAM sharing (reputation)
+
 ```bash
 # Deploy batching to production servers
 run batch/batch-manager.js phantasy --quiet
@@ -148,7 +168,9 @@ run batch/batch-manager.js phantasy --quiet
 ```
 
 ### Scenario 3: Early Game Focus
+
 In early game when hacking is weak:
+
 ```bash
 # Share all available RAM for maximum faction reputation
 run deploy/deploy-share-all.js
@@ -171,7 +193,8 @@ A: The exact formula varies, but more RAM = higher multiplier. Check in-game for
 A: Yes, but they compete for RAM. Balance based on your current goals.
 
 **Q: Will this slow down my hacking operations?**  
-A: Only if you're sharing RAM that could be used for hacking. The deployment script reserves RAM on home to prevent conflicts.
+A: Only if you're sharing RAM that could be used for hacking. The deployment script reserves RAM on home to prevent
+conflicts.
 
 ## Related Scripts
 
@@ -182,7 +205,8 @@ A: Only if you're sharing RAM that could be used for hacking. The deployment scr
 
 ## Summary
 
-RAM sharing is a powerful tool for boosting faction reputation when used strategically. Deploy it network-wide for maximum effect, or target specific servers for a balanced approach. Remember to redeploy after network changes and stop sharing when you need maximum hacking capacity.
+RAM sharing is a powerful tool for boosting faction reputation when used strategically. Deploy it network-wide for
+maximum effect, or target specific servers for a balanced approach. Remember to redeploy after network changes and stop
+sharing when you need maximum hacking capacity.
 
 Happy faction grinding! 🚀
-

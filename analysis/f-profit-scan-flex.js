@@ -1,19 +1,19 @@
 /** f-profit-scan-flex.js - FORMULAS.EXE ENHANCED VERSION
- * 
+ *
  * Formula-enhanced profit scanner with EXACT calculations (requires Formulas.exe)
- * 
+ *
  * IMPORTANT: This script REQUIRES Formulas.exe to be purchased and installed.
  *            - Cost: $5 billion from Dark Web
  *            - Purchase: Requires TOR router access
  *            - Alternative: Use profit-scan-flex.js for estimate-based analysis
- * 
+ *
  * IMPROVEMENTS OVER profit-scan-flex.js:
  *  - Uses ns.formulas.hacking.* for EXACT calculations (no estimates)
  *  - Precise hack chance calculations at optimal and current states
  *  - Exact timing calculations with player stats
  *  - Perfect optimal state projections
  *  - Zero estimation error (0% vs 10-20% error in regular version)
- * 
+ *
  * Usage:
  *   run analysis/f-profit-scan-flex.js [limit] [--save] [--all] [--optimal]
  * Examples:
@@ -22,7 +22,7 @@
  *   run analysis/f-profit-scan-flex.js --optimal  # rank by EXACT potential (min security, max money)
  *   run analysis/f-profit-scan-flex.js --all      # show ALL servers including purchased servers
  *   run analysis/f-profit-scan-flex.js --save     # write profiler-overrides.json
- * 
+ *
  * Error Handling:
  *  - Detects if Formulas.exe is actually owned (not just API presence)
  *  - Clear error message if Formulas.exe not found
@@ -51,7 +51,7 @@ export async function main(ns) {
       hasFormulas = false;
     }
   }
-  
+
   if (!hasFormulas) {
     ns.tprint("━".repeat(71));
     ns.tprint("ERROR: This script requires Formulas.exe");
@@ -87,13 +87,17 @@ export async function main(ns) {
 
   // Get player stats for formula calculations
   const player = ns.getPlayer();
-  
+
   // Debug: verify player object
-  if (!player || typeof player !== 'object') {
+  if (!player || typeof player !== "object") {
     ns.tprint("ERROR: Invalid player object returned from ns.getPlayer()");
     return;
   }
-  ns.tprint(`f-profit-scan-flex: Generating EXACT timing data using Formulas.exe (Player hacking: ${player.hacking || player.skills?.hacking || 'unknown'})...`);
+  ns.tprint(
+    `f-profit-scan-flex: Generating EXACT timing data using Formulas.exe (Player hacking: ${
+      player.hacking || player.skills?.hacking || "unknown"
+    })...`
+  );
 
   // Generate fresh overrides from reachable rooted hosts
   let overrides = {};
@@ -120,10 +124,10 @@ export async function main(ns) {
         if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 
         const server = ns.getServer(h);
-        
+
         // Ensure server object has required properties for formulas
         // Some versions of ns.getServer() may return incomplete objects
-        if (!server || typeof server !== 'object') {
+        if (!server || typeof server !== "object") {
           ns.tprint(`Skipping ${h}: invalid server object`);
           continue;
         }
@@ -145,7 +149,11 @@ export async function main(ns) {
       }
     }
 
-    ns.tprint(`f-profit-scan-flex: Generated ${count} EXACT timing entries (filtering=${onlyMoney ? 'money-only' : 'all-servers'})`);
+    ns.tprint(
+      `f-profit-scan-flex: Generated ${count} EXACT timing entries (filtering=${
+        onlyMoney ? "money-only" : "all-servers"
+      })`
+    );
 
     overrides = result;
 
@@ -176,9 +184,9 @@ export async function main(ns) {
   for (const h of hosts2) {
     try {
       const maxMoney = ns.getServerMaxMoney(h);
-      
+
       if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
-      
+
       const minSec = ns.getServerMinSecurityLevel(h);
       const curSec = ns.getServerSecurityLevel(h);
       const maxRam = ns.getServerMaxRam(h);
@@ -202,7 +210,7 @@ export async function main(ns) {
       const perThreadPerSec = moneyPerHack * batchesPerSecond;
 
       // Calculate EXACT OPTIMAL state (min security, max money)
-      const serverOptimal = {...serverCurrent};
+      const serverOptimal = { ...serverCurrent };
       serverOptimal.hackDifficulty = minSec;
       serverOptimal.minDifficulty = minSec;
       serverOptimal.moneyAvailable = maxMoney;
@@ -236,7 +244,7 @@ export async function main(ns) {
       // Calculate "Fleet Potential Score" for optimal rankings
       // Combines per-thread efficiency with max money capacity
       const fleetScore = optimalPerThreadPerSec * Math.log10(Math.max(maxMoney, 1));
-      
+
       // Calculate thread utilization estimate
       const threadsToDeplete100Pct = optimalFracPerThread > 0 ? 1 / optimalFracPerThread : 9999;
       const threadUtilization = Math.min(1, 500 / threadsToDeplete100Pct);
@@ -264,7 +272,7 @@ export async function main(ns) {
         prepStatus,
         prepIcon,
         fleetScore,
-        threadUtilization
+        threadUtilization,
       });
     } catch (e) {
       ns.tprint(`ERROR analyzing ${h}: ${e.message || e}`);
@@ -291,39 +299,61 @@ export async function main(ns) {
   const show = Math.min(limit, rows.length);
   for (let i = 0; i < show; ++i) {
     const r = rows[i];
-    const rank = String(i + 1).padStart(2, ' ');
+    const rank = String(i + 1).padStart(2, " ");
     const hostName = r.host.padEnd(20);
     const rootStatus = r.rooted === "YES" ? "✓" : "✗";
     const ram = String(r.maxRam + "GB").padStart(6);
-    
+
     if (optimalMode) {
       // OPTIMAL MODE: Show exact fleet potential
       const optimalChance = (r.optimalChance * 100).toFixed(1) + "%";
       const optimalIncome = formatNumber(ns, r.optimalPerThreadPerSec);
       const prepIndicator = `${r.prepIcon} ${r.prepStatus}`.padEnd(13);
       const fleetScoreDisplay = r.fleetScore.toFixed(0);
-      
+
       ns.tprint(`${rank}. ${hostName} [${rootStatus}] ${ram} RAM | ${prepIndicator} | Score: ${fleetScoreDisplay}`);
-      ns.tprint(`    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} ⭐ | Security: ${r.curSec.toFixed(1)}/${r.minSec} (Δ${r.secDelta.toFixed(1)})`);
-      ns.tprint(`    Per-Thread: ${optimalIncome}/s | Cycle=${(r.optimalBatchCycleMs/1000).toFixed(1)}s | Chance=${optimalChance}`);
-      ns.tprint(`    Optimal Timing: H=${(r.optimalHackTimeMs/1000).toFixed(1)}s G=${(r.optimalGrowTimeMs/1000).toFixed(1)}s W=${(r.optimalWeakenTimeMs/1000).toFixed(1)}s`);
-      
+      ns.tprint(
+        `    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} ⭐ | Security: ${r.curSec.toFixed(1)}/${
+          r.minSec
+        } (Δ${r.secDelta.toFixed(1)})`
+      );
+      ns.tprint(
+        `    Per-Thread: ${optimalIncome}/s | Cycle=${(r.optimalBatchCycleMs / 1000).toFixed(
+          1
+        )}s | Chance=${optimalChance}`
+      );
+      ns.tprint(
+        `    Optimal Timing: H=${(r.optimalHackTimeMs / 1000).toFixed(1)}s G=${(r.optimalGrowTimeMs / 1000).toFixed(
+          1
+        )}s W=${(r.optimalWeakenTimeMs / 1000).toFixed(1)}s`
+      );
+
       // Show current vs potential comparison if server needs prep
       if (r.prepStatus !== "READY") {
         const currentIncome = formatNumber(ns, r.perThreadPerSec);
         const currentChance = (r.chance * 100).toFixed(1) + "%";
-        const improvement = ((r.optimalPerThreadPerSec / Math.max(r.perThreadPerSec, 0.001)) - 1) * 100;
-        ns.tprint(`    Current: ${currentIncome}/s (Chance=${currentChance}) → ${improvement.toFixed(0)}% gain after prep`);
+        const improvement = (r.optimalPerThreadPerSec / Math.max(r.perThreadPerSec, 0.001) - 1) * 100;
+        ns.tprint(
+          `    Current: ${currentIncome}/s (Chance=${currentChance}) → ${improvement.toFixed(0)}% gain after prep`
+        );
       }
     } else {
       // CURRENT MODE: Show exact as-is state
       const hackChance = (r.chance * 100).toFixed(1) + "%";
       const perThreadIncome = formatNumber(ns, r.perThreadPerSec);
-      
+
       ns.tprint(`${rank}. ${hostName} [${rootStatus}] ${ram} RAM | ${r.prepIcon} ${r.prepStatus}`);
-      ns.tprint(`    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} | Security: ${r.curSec.toFixed(1)}/${r.minSec} | Hack Chance: ${hackChance}`);
-      ns.tprint(`    Timing: H=${(r.hackTimeMs/1000).toFixed(1)}s G=${(r.growTimeMs/1000).toFixed(1)}s W=${(r.weakenTimeMs/1000).toFixed(1)}s | Income/thread: ${perThreadIncome}`);
-      
+      ns.tprint(
+        `    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} | Security: ${r.curSec.toFixed(1)}/${
+          r.minSec
+        } | Hack Chance: ${hackChance}`
+      );
+      ns.tprint(
+        `    Timing: H=${(r.hackTimeMs / 1000).toFixed(1)}s G=${(r.growTimeMs / 1000).toFixed(1)}s W=${(
+          r.weakenTimeMs / 1000
+        ).toFixed(1)}s | Income/thread: ${perThreadIncome}`
+      );
+
       // Hint at potential if server needs prep
       if (r.prepStatus !== "READY" && r.optimalPerThreadPerSec > r.perThreadPerSec * 1.5) {
         const optimalIncome = formatNumber(ns, r.optimalPerThreadPerSec);
@@ -358,23 +388,22 @@ function formatNumber(ns, v) {
   // 1. Try ns.formatNumber() (v3.0.0+ method)
   // 2. Fall back to ns.nFormat() (v2.8.1 method - deprecated)
   // 3. Manual formatting fallback
-  
+
   try {
     if (ns.formatNumber) {
       return ns.formatNumber(v, "$0.00a");
     }
   } catch (e) {}
-  
+
   try {
     if (ns.nFormat) {
       return ns.nFormat(v, "$0.00a");
     }
   } catch (e) {}
-  
+
   // Manual formatting fallback
-  if (v >= 1e9) return `$${(v/1e9).toFixed(2)}b`;
-  if (v >= 1e6) return `$${(v/1e6).toFixed(2)}m`;
-  if (v >= 1e3) return `$${(v/1e3).toFixed(2)}k`;
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}b`;
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}m`;
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(2)}k`;
   return `$${v.toFixed(2)}`;
 }
-

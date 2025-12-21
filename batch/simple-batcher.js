@@ -44,7 +44,8 @@ export async function main(ns) {
 
   const log = (...parts) => {
     const msg = parts.join(" ");
-    if (quiet) ns.print(msg); else ns.tprint(msg);
+    if (quiet) ns.print(msg);
+    else ns.tprint(msg);
   };
   const logError = (...parts) => ns.tprint(parts.join(" "));
 
@@ -57,12 +58,18 @@ export async function main(ns) {
   // Ensure helpers exist on the host running the batcher (source for scp)
   for (const f of helpers) {
     if (!ns.fileExists(f, host)) {
-      logError(`ERROR: helper missing on ${host}: ${f}. Place the helper files on the server running this script and retry.`);
+      logError(
+        `ERROR: helper missing on ${host}: ${f}. Place the helper files on the server running this script and retry.`
+      );
       return;
     }
   }
 
-  log(`simple-batcher: target=${target} cap=${isFinite(capThreads) ? capThreads : "none"} includeHome=${includeHome} quiet=${quiet} dry=${dryRun}`);
+  log(
+    `simple-batcher: target=${target} cap=${
+      isFinite(capThreads) ? capThreads : "none"
+    } includeHome=${includeHome} quiet=${quiet} dry=${dryRun}`
+  );
   await ns.sleep(20);
 
   // BFS to get all reachable hosts
@@ -87,10 +94,18 @@ export async function main(ns) {
         if (ns.fileExists("HTTPWorm.exe", host)) ns.httpworm(h);
         if (ns.fileExists("SQLInject.exe", host)) ns.sqlinject(h);
         if (ns.fileExists("NUKE.exe", host)) {
-          try { ns.nuke(h); } catch (e) { /* ignore */ }
+          try {
+            ns.nuke(h);
+          } catch (e) {
+            /* ignore */
+          }
         } else {
           // NUKE.exe is a script on home in older versions; use ns.nuke if possible
-          try { ns.nuke(h); } catch (e) { /* ignore */ }
+          try {
+            ns.nuke(h);
+          } catch (e) {
+            /* ignore */
+          }
         }
       }
     } catch (e) {
@@ -142,7 +157,11 @@ export async function main(ns) {
         if (helpers.includes(p.filename)) {
           found = true;
           if (!dryRun) {
-            try { ns.kill(p.filename, h); } catch (e) { /* ignore */ }
+            try {
+              ns.kill(p.filename, h);
+            } catch (e) {
+              /* ignore */
+            }
           }
         }
       }
@@ -164,7 +183,7 @@ export async function main(ns) {
     const growRam = ns.getScriptRam(growScript, h);
     const weakenRam = ns.getScriptRam(weakenScript, h);
     const ramPerThread = Math.max(hackRam, growRam, weakenRam);
-    
+
     if (!ramPerThread || isNaN(ramPerThread) || ramPerThread <= 0) {
       logError(`ERROR: cannot determine script RAM on ${h}.`);
       continue;
@@ -188,7 +207,9 @@ export async function main(ns) {
 
     // Start helpers on remote host
     if (dryRun) {
-      log(`DRY: would run on ${h}: ${weakenScript} x${weakenThreads}, ${growScript} x${growThreads}, ${hackScript} x${hackThreads}`);
+      log(
+        `DRY: would run on ${h}: ${weakenScript} x${weakenThreads}, ${growScript} x${growThreads}, ${hackScript} x${hackThreads}`
+      );
       continue;
     }
 

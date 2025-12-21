@@ -7,7 +7,7 @@
 export async function main(ns) {
   const target = ns.args[0] || "joesguns";
   const script = "deploy/hack-joesguns.js";
-  
+
   ns.disableLog("sleep");
   ns.disableLog("scan");
   ns.disableLog("scp");
@@ -22,7 +22,7 @@ export async function main(ns) {
   const visited = new Set();
   const q = ["home"];
   const servers = [];
-  
+
   while (q.length) {
     const s = q.shift();
     if (visited.has(s)) continue;
@@ -54,7 +54,7 @@ export async function main(ns) {
       // Check RAM
       const ramPer = ns.getScriptRam(script, host);
       const free = Math.max(0, ns.getServerMaxRam(host) - ns.getServerUsedRam(host));
-      
+
       if (free < ramPer) {
         ns.tprint(`${host}: insufficient RAM (${free.toFixed(2)}GB < ${ramPer.toFixed(2)}GB)`);
         failed++;

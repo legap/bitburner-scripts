@@ -5,7 +5,9 @@ Complete index of all documentation for the Bitburner script collection.
 ## 📚 Main Documentation
 
 ### [NEW_GAME_QUICKSTART.md](Getting Started/NEW_GAME_QUICKSTART.md) 🆕
+
 **New Game & Augmentation Recovery Guide**
+
 - Brand new game startup procedures
 - Post-augmentation fast recovery path
 - Copy-paste quickstart commands
@@ -19,7 +21,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [README.md](../README.md)
+
 **Quick Start Guide and Project Overview**
+
 - Project features and capabilities
 - Quick start commands
 - Script categories overview
@@ -33,7 +37,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [GETTING_STARTED.md](Getting Started/GETTING_STARTED.md)
+
 **Step-by-Step Getting Started Guide**
+
 - Project setup instructions
 - Basic usage examples
 - Game stage progression (early, mid, late, end game)
@@ -47,7 +53,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)
+
 **Complete Script Documentation**
+
 - All scripts with detailed parameters
 - Usage examples for each script
 - Script categories and purposes
@@ -60,7 +68,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [REMOTE_API_SETUP.md](Deployment/REMOTE_API_SETUP.md) ⚡ NEW!
+
 **Professional Development Workflow Guide**
+
 - Remote API installation and setup
 - Instant script synchronization (save → test in 2 seconds)
 - VS Code IntelliSense and autocomplete
@@ -76,7 +86,9 @@ Complete index of all documentation for the Bitburner script collection.
 ## 🏗️ Technical Documentation
 
 ### [FORMULAS_ENHANCED_SCRIPTS.md](Feature Guides/FORMULAS_ENHANCED_SCRIPTS.md) 🔮 NEW!
+
 **Formulas.exe Enhanced Scripts Guide**
+
 - f-profit-scan-flex.js - EXACT target selection (zero error)
 - f-estimate-production.js - Perfect income predictions
 - Comparison: estimates vs exact formulas
@@ -90,7 +102,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [SCRIPTS_USING_FORMULAS.md](Feature Guides/SCRIPTS_USING_FORMULAS.md) 🔮 NEW!
+
 **Complete Formula Scripts Reference**
+
 - Complete list of scripts requiring Formulas.exe
 - Detailed breakdown of formulas used in each script
 - Comparison table: regular vs formula scripts
@@ -103,7 +117,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [PURCHASABLE_PROGRAMS_GUIDE.md](Feature Guides/PURCHASABLE_PROGRAMS_GUIDE.md) 🆕
+
 **Complete Purchasable Programs Evaluation**
+
 - All 10 purchasable programs analyzed
 - What each program does and costs
 - Which programs your scripts use
@@ -117,7 +133,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [RAM_SHARING_GUIDE.md](Feature Guides/RAM_SHARING_GUIDE.md) 🆕
+
 **Faction Reputation RAM Sharing Guide**
+
 - What is RAM sharing and how it works
 - Quick start deployment commands
 - Understanding reputation multiplier bonus
@@ -132,7 +150,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [PROFIT_SCAN_OPTIMAL_MODE.md](Version History/Enhancements/PROFIT_SCAN_OPTIMAL_MODE.md) 🆕
+
 **Optimal State Profit Scanner Enhancement**
+
 - `--optimal` flag feature documentation
 - Current vs potential state rankings
 - Prep status indicators (✓/◐/⚠)
@@ -146,7 +166,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [GLOBAL_KILL_ENHANCEMENT_SUMMARY.md](Version History/Enhancements/GLOBAL_KILL_ENHANCEMENT_SUMMARY.md) 🆕✨
+
 **Global Kill Reliability Enhancement (v1.8.6)**
+
 - Problem statement and root causes
 - Solution implementation details
 - Technical comparison (before/after)
@@ -160,7 +182,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [BITNODE_MULTIPLIER_FIX.md](Bug Fixes/BITNODE_MULTIPLIER_FIX.md) 🌐🔧 NEW!
+
 **BitNode Multiplier Support (v1.8.17)**
+
 - Critical fix for server money depletion in BitNode 2
 - BitNode-aware thread calculations
 - Formulas.exe integration for 100% accuracy
@@ -170,12 +194,15 @@ Complete index of all documentation for the Bitburner script collection.
 - Testing results and performance impact
 - Migration guide and troubleshooting
 
-**When to use**: Understanding BitNode multiplier support, troubleshooting money depletion issues, or learning about Formulas.exe integration
+**When to use**: Understanding BitNode multiplier support, troubleshooting money depletion issues, or learning about
+Formulas.exe integration
 
 ---
 
 ### [PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md)
+
 **Directory Structure and Organization**
+
 - Complete directory tree
 - Script categories breakdown
 - Workflow integration patterns
@@ -188,7 +215,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md)
+
 **Error Handling Implementation Details**
+
 - Structured logging system
 - Try-catch error handling patterns
 - Validation and early returns
@@ -202,7 +231,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md)
+
 **Comprehensive Change Documentation**
+
 - Script-by-script changes
 - Line-by-line improvements
 - Code snippets with explanations
@@ -217,7 +248,9 @@ Complete index of all documentation for the Bitburner script collection.
 ## 📋 Version History
 
 ### [CHANGELOG.md](../CHANGELOG.md)
+
 **Complete Version History**
+
 - Release notes for v1.0.0
 - Added features list
 - Enhanced features list
@@ -233,7 +266,9 @@ Complete index of all documentation for the Bitburner script collection.
 ---
 
 ### [INITIALIZATION_COMPLETE.md](Version History/INITIALIZATION_COMPLETE.md)
+
 **Project Initialization Summary**
+
 - Accomplishments checklist
 - New directory structure
 - Quick start commands
@@ -248,32 +283,38 @@ Complete index of all documentation for the Bitburner script collection.
 ## 🎯 Documentation by Use Case
 
 ### For New Users
+
 1. **[NEW_GAME_QUICKSTART.md](Getting Started/NEW_GAME_QUICKSTART.md)** - Fastest path to getting started 🆕
 2. **[README.md](../README.md)** - Get project overview
 3. **[GETTING_STARTED.md](Getting Started/GETTING_STARTED.md)** - Follow setup guide
 4. **[SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)** - Look up specific scripts
 
 ### For Post-Augmentation Recovery 🆕
+
 1. **[NEW_GAME_QUICKSTART.md](Getting Started/NEW_GAME_QUICKSTART.md)** - Fast recovery guide
 2. **[SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)** - Quick script lookup
 
 ### For Experienced Users
+
 1. **[SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)** - Quick script lookup
 2. **[README.md](../README.md)** - Advanced usage examples
 3. **[PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md)** - Understanding organization
 
 ### For Troubleshooting
+
 1. **[ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md)** - Error patterns
 2. **[GETTING_STARTED.md](Getting Started/GETTING_STARTED.md)** - Troubleshooting section
 3. **[SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)** - Script-specific issues
 
 ### For Development
+
 1. **[REMOTE_API_SETUP.md](Deployment/REMOTE_API_SETUP.md)** - Professional development workflow ⚡
 2. **[DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md)** - Implementation details
 3. **[ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md)** - Coding patterns
 4. **[PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md)** - Architecture overview
 
 ### For Project Management
+
 1. **[CHANGELOG.md](../CHANGELOG.md)** - Version history
 2. **[DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md)** - Change statistics
 3. **[INITIALIZATION_COMPLETE.md](Version History/INITIALIZATION_COMPLETE.md)** - Project status
@@ -284,32 +325,32 @@ Complete index of all documentation for the Bitburner script collection.
 
 ### Common Tasks
 
-| Task | Documentation |
-|------|---------------|
-| New game / augmentation recovery | [NEW_GAME_QUICKSTART.md](Getting Started/NEW_GAME_QUICKSTART.md) 🆕 |
-| Which programs to buy | [PURCHASABLE_PROGRAMS_GUIDE.md](Feature Guides/PURCHASABLE_PROGRAMS_GUIDE.md) 🆕 |
-| Perfect accuracy with Formulas.exe | [FORMULAS_ENHANCED_SCRIPTS.md](Feature Guides/FORMULAS_ENHANCED_SCRIPTS.md) 🔮 |
-| Which scripts use Formulas.exe | [SCRIPTS_USING_FORMULAS.md](Feature Guides/SCRIPTS_USING_FORMULAS.md) 🔮 |
-| Boost faction reputation | [RAM_SHARING_GUIDE.md](Feature Guides/RAM_SHARING_GUIDE.md) 🆕 |
-| Find best profit targets | [PROFIT_SCAN_OPTIMAL_MODE.md](Version History/Enhancements/PROFIT_SCAN_OPTIMAL_MODE.md) 🆕 |
-| Setup dev environment | [REMOTE_API_SETUP.md](Deployment/REMOTE_API_SETUP.md) ⚡ |
-| First time setup | [GETTING_STARTED.md](Getting Started/GETTING_STARTED.md) |
-| Run a script | [SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md) |
-| Fix an error | [ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md) |
-| Find a script | [PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md) |
-| Check changes | [CHANGELOG.md](../CHANGELOG.md) |
-| Understand code | [DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md) |
+| Task                               | Documentation                                                                                 |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| New game / augmentation recovery   | [NEW_GAME_QUICKSTART.md](Getting Started/NEW_GAME_QUICKSTART.md) 🆕                           |
+| Which programs to buy              | [PURCHASABLE_PROGRAMS_GUIDE.md](Feature Guides/PURCHASABLE_PROGRAMS_GUIDE.md) 🆕              |
+| Perfect accuracy with Formulas.exe | [FORMULAS_ENHANCED_SCRIPTS.md](Feature Guides/FORMULAS_ENHANCED_SCRIPTS.md) 🔮                |
+| Which scripts use Formulas.exe     | [SCRIPTS_USING_FORMULAS.md](Feature Guides/SCRIPTS_USING_FORMULAS.md) 🔮                      |
+| Boost faction reputation           | [RAM_SHARING_GUIDE.md](Feature Guides/RAM_SHARING_GUIDE.md) 🆕                                |
+| Find best profit targets           | [PROFIT_SCAN_OPTIMAL_MODE.md](Version History/Enhancements/PROFIT_SCAN_OPTIMAL_MODE.md) 🆕    |
+| Setup dev environment              | [REMOTE_API_SETUP.md](Deployment/REMOTE_API_SETUP.md) ⚡                                      |
+| First time setup                   | [GETTING_STARTED.md](Getting Started/GETTING_STARTED.md)                                      |
+| Run a script                       | [SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)                                          |
+| Fix an error                       | [ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md) |
+| Find a script                      | [PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md)                                        |
+| Check changes                      | [CHANGELOG.md](../CHANGELOG.md)                                                               |
+| Understand code                    | [DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md)                                    |
 
 ### Quick Links
 
-| Topic | Location |
-|-------|----------|
-| Core scripts | [core/](../../core/) |
-| Batch scripts | [batch/](../../batch/) |
+| Topic          | Location                     |
+| -------------- | ---------------------------- |
+| Core scripts   | [core/](../../core/)         |
+| Batch scripts  | [batch/](../../batch/)       |
 | Analysis tools | [analysis/](../../analysis/) |
-| Utilities | [utils/](../../utils/) |
-| Deployment | [deploy/](../../deploy/) |
-| Configuration | [config/](../../config/) |
+| Utilities      | [utils/](../../utils/)       |
+| Deployment     | [deploy/](../../deploy/)     |
+| Configuration  | [config/](../../config/)     |
 
 ---
 
@@ -317,11 +358,11 @@ Complete index of all documentation for the Bitburner script collection.
 
 ### Finding Information
 
-**To find**: Script usage → Check [SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md)
-**To find**: Error solutions → Check [ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md)
-**To find**: Code changes → Check [DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md)
-**To find**: Version info → Check [CHANGELOG.md](../CHANGELOG.md)
-**To find**: File locations → Check [PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md)
+**To find**: Script usage → Check [SCRIPT_REFERENCE.md](Reference/SCRIPT_REFERENCE.md) **To find**: Error solutions →
+Check [ERROR_HANDLING_IMPROVEMENTS.md](Version History/Enhancements/ERROR_HANDLING_IMPROVEMENTS.md) **To find**: Code
+changes → Check [DETAILED_CHANGES.md](Version History/DETAILED_CHANGES.md) **To find**: Version info → Check
+[CHANGELOG.md](../CHANGELOG.md) **To find**: File locations → Check
+[PROJECT_STRUCTURE.md](Reference/PROJECT_STRUCTURE.md)
 
 ### Documentation Hierarchy
 
@@ -343,6 +384,7 @@ README.md (Start Here)
 ## 📝 Documentation Standards
 
 ### All Documentation Includes
+
 - Clear headings and structure
 - Code examples where applicable
 - Usage instructions
@@ -350,6 +392,7 @@ README.md (Start Here)
 - Cross-references to related docs
 
 ### Documentation Types
+
 1. **Guides** - Step-by-step instructions
 2. **References** - Complete information lookups
 3. **Technical** - Implementation details
@@ -374,7 +417,7 @@ README.md (Start Here)
 ✅ Error handling guides  
 ✅ Version history  
 ✅ Change documentation  
-✅ Quick reference tables  
+✅ Quick reference tables
 
 ---
 

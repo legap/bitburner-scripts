@@ -1,0 +1,26 @@
+{
+  "name": "bitburner-scripts",
+  "version": "0.10.0",
+  "description": "Bitburner scripts based on the work ofhttps://github.com/r3c0n75.",
+  "main": "",
+  "scripts": {
+    "clean": "prettier --write . && eslint --fix --ext js,jsx,ts,tsx --max-warnings 0 .",
+    "format": "prettier --write .",
+    "lint": "eslint --fix --ext js,jsx,ts,tsx --max-warnings 0 .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/legap/bitburner-scripts.git"
+  },
+  "devDependencies": {
+    "eslint": "^8.25.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-markdownlint": "^0.4.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "markdownlint": "^0.26.2",
+    "prettier": "^2.7.1"
+  }
+}

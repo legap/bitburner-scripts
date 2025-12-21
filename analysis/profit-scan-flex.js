@@ -84,7 +84,11 @@ export async function main(ns) {
       }
     }
 
-    ns.tprint(`profit-scan-flex: generated ${count} timing entries from rooted hosts (filtering=${onlyMoney ? 'money-only' : 'all-servers'})`);
+    ns.tprint(
+      `profit-scan-flex: generated ${count} timing entries from rooted hosts (filtering=${
+        onlyMoney ? "money-only" : "all-servers"
+      })`
+    );
 
     // Use fresh data in-memory
     overrides = result;
@@ -117,10 +121,10 @@ export async function main(ns) {
   for (const h of hosts2) {
     try {
       const maxMoney = ns.getServerMaxMoney(h);
-      
+
       // Apply --only-money filter to display output
       if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
-      
+
       const minSec = ns.getServerMinSecurityLevel(h);
       const curSec = ns.getServerSecurityLevel(h);
       const maxRam = ns.getServerMaxRam(h);
@@ -149,7 +153,7 @@ export async function main(ns) {
       const batchIntervalMs = batchCycleTimeMs * 1.25; // 25% safety buffer
       const batchesPerSecond = 1000 / batchIntervalMs;
       const moneyPerHack = maxMoney * fracPerThread * chance;
-      
+
       // per-thread expected money per second (realistic batch cycle)
       const perThreadPerSec = moneyPerHack * batchesPerSecond;
 
@@ -157,15 +161,15 @@ export async function main(ns) {
       // Security affects timing by roughly: time * (1 + (curSec - minSec) / minSec)
       // So optimal time = current time / (1 + secDelta / minSec)
       const secDelta = curSec - minSec;
-      const secFactor = 1 + (secDelta / Math.max(minSec, 1));
-      
+      const secFactor = 1 + secDelta / Math.max(minSec, 1);
+
       const optimalHackTimeMs = hackTimeMs / secFactor;
       const optimalGrowTimeMs = growTimeMs / secFactor;
       const optimalWeakenTimeMs = weakenTimeMs / secFactor;
       const optimalBatchCycleMs = Math.max(optimalHackTimeMs, optimalGrowTimeMs, optimalWeakenTimeMs);
       const optimalBatchIntervalMs = optimalBatchCycleMs * 1.25;
       const optimalBatchesPerSecond = 1000 / optimalBatchIntervalMs;
-      
+
       // At min security, hack chance is much higher (estimate ~90% for prepped servers)
       // Actual calculation would require server skills, but we can estimate improvement
       const optimalChance = Math.min(0.95, chance * (1 + secDelta / minSec));
@@ -188,7 +192,7 @@ export async function main(ns) {
       // Uses logarithmic scale to reward high-capacity targets without complete domination
       // Formula: perThreadIncome * log10(maxMoney) - rewards both efficiency AND capacity
       const fleetScore = optimalPerThreadPerSec * Math.log10(Math.max(maxMoney, 1));
-      
+
       // Calculate what % of threads would be useful (rough estimate)
       // If fracPerThread is 0.005 (0.5%), you'd need 200 threads to drain 100%
       // Most fleets have 100-2000 threads, so we estimate thread utilization
@@ -215,7 +219,7 @@ export async function main(ns) {
         prepStatus,
         prepIcon,
         fleetScore,
-        threadUtilization
+        threadUtilization,
       });
     } catch (e) {
       // ignore hosts we can't query
@@ -243,37 +247,53 @@ export async function main(ns) {
   const show = Math.min(limit, rows.length);
   for (let i = 0; i < show; ++i) {
     const r = rows[i];
-    const rank = String(i + 1).padStart(2, ' ');
+    const rank = String(i + 1).padStart(2, " ");
     const hostName = r.host.padEnd(20);
     const rootStatus = r.rooted === "YES" ? "✓" : "✗";
     const ram = String(r.maxRam + "GB").padStart(6);
-    
+
     if (optimalMode) {
       // OPTIMAL MODE: Show fleet potential (capacity + efficiency)
       const optimalChance = (r.optimalChance * 100).toFixed(1) + "%";
       const optimalIncome = formatNumber(ns, r.optimalPerThreadPerSec);
       const prepIndicator = `${r.prepIcon} ${r.prepStatus}`.padEnd(13);
       const fleetScoreDisplay = r.fleetScore.toFixed(0);
-      
+
       ns.tprint(`${rank}. ${hostName} [${rootStatus}] ${ram} RAM | ${prepIndicator} | Score: ${fleetScoreDisplay}`);
-      ns.tprint(`    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} ⭐ | Security: ${r.curSec.toFixed(1)}/${r.minSec} (Δ${r.secDelta.toFixed(1)})`);
-      ns.tprint(`    Per-Thread: ${optimalIncome}/s | Cycle=${(r.optimalBatchCycleMs/1000).toFixed(1)}s | Chance=${optimalChance}`);
-      
+      ns.tprint(
+        `    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} ⭐ | Security: ${r.curSec.toFixed(1)}/${
+          r.minSec
+        } (Δ${r.secDelta.toFixed(1)})`
+      );
+      ns.tprint(
+        `    Per-Thread: ${optimalIncome}/s | Cycle=${(r.optimalBatchCycleMs / 1000).toFixed(
+          1
+        )}s | Chance=${optimalChance}`
+      );
+
       // Show current vs potential comparison if server needs prep
       if (r.prepStatus !== "READY") {
         const currentIncome = formatNumber(ns, r.perThreadPerSec);
-        const improvement = ((r.optimalPerThreadPerSec / r.perThreadPerSec) - 1) * 100;
+        const improvement = (r.optimalPerThreadPerSec / r.perThreadPerSec - 1) * 100;
         ns.tprint(`    Current: ${currentIncome}/s (${improvement.toFixed(0)}% gain possible after prep)`);
       }
     } else {
       // CURRENT MODE: Show as-is state with prep hints
       const hackChance = (r.chance * 100).toFixed(1) + "%";
       const perThreadIncome = formatNumber(ns, r.perThreadPerSec);
-      
+
       ns.tprint(`${rank}. ${hostName} [${rootStatus}] ${ram} RAM | ${r.prepIcon} ${r.prepStatus}`);
-      ns.tprint(`    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} | Security: ${r.curSec.toFixed(1)}/${r.minSec} | Hack Chance: ${hackChance}`);
-      ns.tprint(`    Timing: H=${(r.hackTimeMs/1000).toFixed(1)}s G=${(r.growTimeMs/1000).toFixed(1)}s W=${(r.weakenTimeMs/1000).toFixed(1)}s | Income/thread: ${perThreadIncome}`);
-      
+      ns.tprint(
+        `    Max Money: ${formatNumber(ns, r.maxMoney).padEnd(12)} | Security: ${r.curSec.toFixed(1)}/${
+          r.minSec
+        } | Hack Chance: ${hackChance}`
+      );
+      ns.tprint(
+        `    Timing: H=${(r.hackTimeMs / 1000).toFixed(1)}s G=${(r.growTimeMs / 1000).toFixed(1)}s W=${(
+          r.weakenTimeMs / 1000
+        ).toFixed(1)}s | Income/thread: ${perThreadIncome}`
+      );
+
       // Hint at potential if server needs prep
       if (r.prepStatus !== "READY" && r.optimalPerThreadPerSec > r.perThreadPerSec * 2) {
         const optimalIncome = formatNumber(ns, r.optimalPerThreadPerSec);
@@ -308,22 +328,22 @@ function formatNumber(ns, v) {
   // 1. Try ns.formatNumber() (v3.0.0+ method)
   // 2. Fall back to ns.nFormat() (v2.8.1 method - deprecated)
   // 3. Manual formatting fallback
-  
+
   try {
     if (ns.formatNumber) {
       return ns.formatNumber(v, "$0.00a");
     }
   } catch (e) {}
-  
+
   try {
     if (ns.nFormat) {
       return ns.nFormat(v, "$0.00a");
     }
   } catch (e) {}
-  
+
   // Manual formatting fallback
-  if (v >= 1e9) return `$${(v/1e9).toFixed(2)}b`;
-  if (v >= 1e6) return `$${(v/1e6).toFixed(2)}m`;
-  if (v >= 1e3) return `$${(v/1e3).toFixed(2)}k`;
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}b`;
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}m`;
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(2)}k`;
   return `$${v.toFixed(2)}`;
 }

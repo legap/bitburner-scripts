@@ -2,24 +2,28 @@
 
 **Date**: November 12, 2025  
 **Issue**: smart-batcher.js and simple-batcher.js RAM calculation bug  
-**Reported By**: Bertie690 (Issue #1: smart-batcher.js script exclusively uses hack script RAM for calculations, resulting in script errors)  
+**Reported By**: Bertie690 (Issue #1: smart-batcher.js script exclusively uses hack script RAM for calculations,
+resulting in script errors)  
 **Status**: ✅ Fixed
 
 ---
 
 ## Problem Description
 
-Both `smart-batcher.js` and `simple-batcher.js` were calculating available threads using only the hack script's RAM cost (1.7 GB), but the grow and weaken scripts actually use 1.75 GB. This caused two critical issues:
+Both `smart-batcher.js` and `simple-batcher.js` were calculating available threads using only the hack script's RAM cost
+(1.7 GB), but the grow and weaken scripts actually use 1.75 GB. This caused two critical issues:
 
 ### Issue 1: 64GB Server Over-Allocation
+
 - **Calculation**: 64 / 1.7 = 37.6 threads (rounded to 37)
 - **Reality**: 64 / 1.75 = 36.5 threads (actually only 36 work)
 - **Result**: "insufficient ram" errors when scripts tried to start
 
 ### Issue 2: 8GB Server Weaken Script Failure
+
 - **Calculation**: 8 / 1.7 = 4.7 threads (rounded to 4)
 - **Thread Allocation**: 1 hack + 3 grow + 1 weaken (should be 5 total)
-- **Actual RAM Usage**: 
+- **Actual RAM Usage**:
   - 1 hack @ 1.7 GB = 1.7 GB
   - 3 grow @ 1.75 GB = 5.25 GB
   - 1 weaken @ 1.75 GB = 1.75 GB
@@ -33,12 +37,14 @@ Both `smart-batcher.js` and `simple-batcher.js` were calculating available threa
 Changed both scripts to check RAM cost of **all three scripts** and use the **maximum** value for thread calculations.
 
 ### Before (Broken):
+
 ```javascript
 const ramPerThread = ns.getScriptRam(hackScript, h);
 let totalThreads = Math.floor(freeRam / ramPerThread);
 ```
 
 ### After (Fixed):
+
 ```javascript
 const hackRam = ns.getScriptRam(hackScript, h);
 const growRam = ns.getScriptRam(growScript, h);
@@ -52,17 +58,20 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 ## Impact
 
 ### ✅ Benefits
+
 - **100% reliable script deployment** - all scripts start successfully
 - **Accurate RAM allocation** - never exceeds available RAM
 - **No more "insufficient ram" errors**
 - **No more partial deployments** - all three scripts (hack/grow/weaken) start together
 
 ### 📉 Trade-off
+
 - **Minor efficiency loss** on large servers (0.05 GB per thread)
 - Example: 2048 GB server loses ~29 threads (1170 → 1141)
 - This is acceptable for **guaranteed reliability**
 
 ### 🎯 Specific Improvements
+
 - **64GB servers**: Correctly calculates 36 threads instead of 37
 - **8GB servers**: Correctly calculates 4 threads instead of 5
 - **All servers**: Guaranteed successful deployment of all scripts
@@ -72,18 +81,22 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 ## Files Modified
 
 ### Source Files (Remote API Development)
+
 - `bitburner-remote-api/src/batch/smart-batcher.js`
 - `bitburner-remote-api/src/batch/simple-batcher.js`
 
 ### Deployed Files (GitHub Repository)
+
 - `scripts/batch/smart-batcher.js`
 - `scripts/batch/simple-batcher.js`
 
 ### Documentation
+
 - `scripts/CHANGELOG.md` - Added v1.8.13 entry with technical details
 - `scripts/README.md` - Updated version to 1.8.13 and added "What's New" section
 
 ### Other Scripts Checked
+
 - ✅ `batch-manager.js` - No issue (only checks if batcher script fits, not for thread calculations)
 - ✅ `home-batcher.js` - Already correct (checks all three scripts separately)
 
@@ -92,26 +105,32 @@ let totalThreads = Math.floor(freeRam / ramPerThread);
 ## Testing Recommendations
 
 ### Test Case 1: 64GB Server
+
 ```bash
 # Before fix: Would show errors
 # After fix: Should show clean deployment
 run smart-batcher.js joesguns
 ```
+
 **Expected**: 36 threads deployed successfully, no errors
 
 ### Test Case 2: 8GB Server
+
 ```bash
 # Before fix: Weaken script would fail (1/3/0 allocation)
 # After fix: All three scripts start (allocation may be 1/2/1 or 1/1/2)
 run smart-batcher.js joesguns
 ```
+
 **Expected**: All three scripts start successfully, balanced allocation
 
 ### Test Case 3: Large Fleet
+
 ```bash
 # Test across entire network
 run smart-batcher.js joesguns --include-home
 ```
+
 **Expected**: No "insufficient ram" errors, all servers with sufficient RAM get deployed
 
 ---
@@ -119,24 +138,30 @@ run smart-batcher.js joesguns --include-home
 ## Technical Notes
 
 ### Why Use Maximum RAM?
+
 Using the maximum RAM cost ensures we never over-allocate threads. The calculation becomes:
+
 ```javascript
-availableThreads = floor(freeRAM / max(hackRAM, growRAM, weakenRAM))
+availableThreads = floor(freeRAM / max(hackRAM, growRAM, weakenRAM));
 ```
 
 This guarantees that no matter which combination of scripts we deploy, they will all fit within available RAM.
 
 ### Why Not Use Individual RAM Costs?
+
 We could theoretically calculate threads for each script separately:
+
 ```javascript
-hackThreads = floor(freeRAM / hackRAM * hackRatio)
-growThreads = floor(freeRAM / growRAM * growRatio)
-weakenThreads = floor(freeRAM / weakenRAM * weakenRatio)
+hackThreads = floor((freeRAM / hackRAM) * hackRatio);
+growThreads = floor((freeRAM / growRAM) * growRatio);
+weakenThreads = floor((freeRAM / weakenRAM) * weakenRatio);
 ```
 
-However, this adds complexity and can still result in over-allocation when scripts are started sequentially. Using the maximum RAM cost is simpler and more reliable.
+However, this adds complexity and can still result in over-allocation when scripts are started sequentially. Using the
+maximum RAM cost is simpler and more reliable.
 
 ### Efficiency Loss Analysis
+
 - **Hack script**: 1.7 GB (loses 0.05 GB per thread)
 - **Grow script**: 1.75 GB (no loss)
 - **Weaken script**: 1.75 GB (no loss)
@@ -167,4 +192,3 @@ The reliability gain far outweighs the minor efficiency loss.
 ---
 
 **End of Fix Documentation**
-

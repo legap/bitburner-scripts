@@ -1,6 +1,6 @@
 /** purchase-server-8gb.js
  * Purchase servers with 8GB RAM (or custom amount).
- * 
+ *
  * Usage:
  *   run purchase-server-8gb.js              # Buy all affordable 8GB servers
  *   run purchase-server-8gb.js 5            # Buy exactly 5 servers (8GB)
@@ -19,16 +19,16 @@ function formatMoney(ns, value, format) {
   try {
     return ns.nFormat(value, format);
   } catch (e) {
-    const units = ['', 'k', 'm', 'b', 't', 'q', 'Q', 's', 'S', 'o', 'n'];
+    const units = ["", "k", "m", "b", "t", "q", "Q", "s", "S", "o", "n"];
     let unitIndex = 0;
     let num = Math.abs(value);
     while (num >= 1000 && unitIndex < units.length - 1) {
       num /= 1000;
       unitIndex++;
     }
-    const decimals = format.includes('.00') ? 2 : format.includes('.000') ? 3 : 0;
+    const decimals = format.includes(".00") ? 2 : format.includes(".000") ? 3 : 0;
     const formatted = num.toFixed(decimals) + units[unitIndex];
-    return (value < 0 ? '-$' : '$') + formatted;
+    return (value < 0 ? "-$" : "$") + formatted;
   }
 }
 
@@ -38,10 +38,15 @@ export async function main(ns) {
 
   // Parse arguments
   const buyAll = ns.args.includes("--all");
-  let countToBuy = buyAll ? Infinity : (ns.args[0] && !isNaN(ns.args[0]) ? Number(ns.args[0]) : Infinity);
-  const ram = ns.args[1] && !isNaN(ns.args[1]) ? Number(ns.args[1]) : 
-               (ns.args[0] && !isNaN(ns.args[0]) && ns.args.length === 1 ? 8 : 
-               (ns.args[0] === "--all" && ns.args[1] ? Number(ns.args[1]) : 8));
+  let countToBuy = buyAll ? Infinity : ns.args[0] && !isNaN(ns.args[0]) ? Number(ns.args[0]) : Infinity;
+  const ram =
+    ns.args[1] && !isNaN(ns.args[1])
+      ? Number(ns.args[1])
+      : ns.args[0] && !isNaN(ns.args[0]) && ns.args.length === 1
+      ? 8
+      : ns.args[0] === "--all" && ns.args[1]
+      ? Number(ns.args[1])
+      : 8;
 
   const cost = ns.getPurchasedServerCost(ram);
   const maxServers = ns.getPurchasedServerLimit();
@@ -65,7 +70,7 @@ export async function main(ns) {
   // Calculate how many we can actually buy
   const playerMoney = ns.getPlayer().money;
   const affordableCount = Math.floor(playerMoney / cost);
-  
+
   ns.tprint(`Your money: ${formatMoney(ns, playerMoney, "$0.00a")}`);
   ns.tprint(`Can afford: ${affordableCount} servers`);
   ns.tprint("");
@@ -77,7 +82,7 @@ export async function main(ns) {
 
   // Determine actual number to buy
   const actualCount = Math.min(countToBuy, affordableCount, availableSlots);
-  
+
   if (actualCount === 0) {
     ns.tprint("✗ No servers to purchase!");
     return;
@@ -85,7 +90,7 @@ export async function main(ns) {
 
   ns.tprint(`Purchasing ${actualCount} server(s)...`);
   ns.tprint("─── PURCHASE PHASE ───");
-  
+
   let purchased = 0;
   let failed = 0;
 
@@ -112,7 +117,7 @@ export async function main(ns) {
       ns.tprint(`✗ Failed to purchase ${serverName}`);
       failed++;
     }
-    
+
     await ns.sleep(50); // Small delay between purchases
   }
 
@@ -129,7 +134,7 @@ export async function main(ns) {
   ns.tprint(`Remaining money: ${formatMoney(ns, ns.getPlayer().money, "$0.00a")}`);
   ns.tprint(`Total servers: ${newTotal}/${maxServers}`);
   ns.tprint("═══════════════════════════════════════════════════");
-  
+
   if (newTotal < maxServers && ns.getPlayer().money >= cost) {
     ns.tprint(`\n💡 TIP: You can afford ${Math.floor(ns.getPlayer().money / cost)} more server(s)!`);
   }

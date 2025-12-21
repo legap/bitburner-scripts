@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "es2020",
+    "allowJs": true,
+    "checkJs": true,
+    "strict": false,
+    "typeRoots": ["./types"]
+  }
+}

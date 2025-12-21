@@ -1,10 +1,12 @@
 # Remote API Testing Plan
 
-Based on the [official Bitburner Remote API documentation](https://github.com/bitburner-official/bitburner-src/blob/dev/src/Documentation/doc/en/programming/remote_api.md)
+Based on the
+[official Bitburner Remote API documentation](https://github.com/bitburner-official/bitburner-src/blob/dev/src/Documentation/doc/en/programming/remote_api.md)
 
 ## 🎯 What We're Testing
 
 The Remote API is a **WebSocket-based protocol** that allows external tools to:
+
 - Push files to Bitburner
 - Get files from Bitburner
 - List files on servers
@@ -14,6 +16,7 @@ The Remote API is a **WebSocket-based protocol** that allows external tools to:
 ## 📋 Test Plan Overview
 
 We'll test with the **TypeScript Template** (official, simplest option) to verify:
+
 1. ✅ Connection establishment
 2. ✅ File synchronization (push files to Bitburner)
 3. ✅ Live editing workflow
@@ -25,6 +28,7 @@ We'll test with the **TypeScript Template** (official, simplest option) to verif
 ## Phase 1: Setup (10 minutes)
 
 ### Step 1.1: Verify Prerequisites
+
 You mentioned you already have Node.js installed. Let's confirm:
 
 ```powershell
@@ -35,6 +39,7 @@ git --version
 ```
 
 **Expected output:**
+
 - Node.js: v16.x or higher
 - npm: v8.x or higher
 - git: v2.x or higher
@@ -56,6 +61,7 @@ npm install
 ```
 
 **What this does:**
+
 - Installs `bitburner-filesync` (the actual Remote API WebSocket server)
 - Installs TypeScript compiler (optional, we can use JavaScript)
 - Sets up the development environment
@@ -68,6 +74,7 @@ Get-ChildItem
 ```
 
 **Expected structure:**
+
 ```
 bitburner-remote-api/
 ├── src/              # Your scripts go here
@@ -87,12 +94,14 @@ npm run watch
 ```
 
 **Expected output:**
+
 ```
 Bitburner filesync server listening on port 12525
 Watching for file changes...
 ```
 
 **What's happening:**
+
 - A WebSocket server starts on `localhost:12525`
 - The server watches files in `src/` directory
 - Any changes trigger automatic sync to Bitburner
@@ -109,6 +118,7 @@ Test-NetConnection -ComputerName localhost -Port 12525
 ```
 
 **Expected output:**
+
 ```
 TcpTestSucceeded : True
 ```
@@ -131,10 +141,12 @@ Open Bitburner in your web browser (Steam or web version)
 4. Click **Connect**
 
 **Expected result:**
+
 - ✅ Status shows: "Connected to Remote API"
 - Green indicator appears
 
 **If connection fails:**
+
 - Verify `npm run watch` is still running
 - Check Windows Firewall isn't blocking port 12525
 - Try `127.0.0.1` instead of `localhost`
@@ -175,6 +187,7 @@ export async function main(ns) {
    ```
 
 **Expected output in Bitburner:**
+
 ```
 🎉 Remote API is working!
 This file was synced instantly!
@@ -191,6 +204,7 @@ Current time: [current time]
    ```
 
 **Expected result:**
+
 - The new message appears instantly
 - No need to wget or run update scripts!
 
@@ -218,6 +232,7 @@ run profit-scan.js
 ```
 
 **Expected result:**
+
 - Script runs normally
 - No changes needed to the script
 - Works exactly like the GitHub method
@@ -249,6 +264,7 @@ run analysis/profit-scan-flex.js
 ```
 
 **What to observe:**
+
 - Files appear in folders (not flattened!)
 - You can run them with folder paths
 - Folder structure is preserved in-game
@@ -298,6 +314,7 @@ Write-Host "Remote API method took: $duration seconds"
 ```
 
 **Expected comparison:**
+
 - GitHub method: 60-120+ seconds (manual steps, network delay)
 - Remote API: 2-5 seconds (instant sync)
 
@@ -312,6 +329,7 @@ Write-Host "Remote API method took: $duration seconds"
 3. Try to run a script in Bitburner
 
 **Expected result:**
+
 - ❌ Connection lost (this is normal)
 - In Bitburner: Options → Remote API → Connect (again)
 - ✅ Connection restored
@@ -325,6 +343,7 @@ Write-Host "Remote API method took: $duration seconds"
 3. In Bitburner, check if the change appeared
 
 **Expected result:**
+
 - ❌ File does NOT sync (server is stopped)
 - Restart server: `npm run watch`
 - Reconnect in Bitburner
@@ -340,6 +359,7 @@ Write-Host "Remote API method took: $duration seconds"
 Can you use both Remote API and GitHub simultaneously?
 
 **Test scenario:**
+
 1. **Morning**: Edit scripts using Remote API (fast iteration)
 2. **End of day**: Commit and push to GitHub (version control)
 
@@ -353,6 +373,7 @@ git push
 ```
 
 **Result:**
+
 - ✅ Both workflows can coexist
 - Use Remote API for daily dev
 - Use GitHub for backups and sharing
@@ -378,32 +399,38 @@ After completing this test plan, you should have verified:
 Fill this out as you test:
 
 ### Connection Test
+
 - [ ] Server starts successfully (port 12525)
 - [ ] Bitburner connects successfully
 - [ ] Status shows "Connected"
 
 ### File Sync Test
+
 - [ ] New file syncs instantly (< 5 seconds)
 - [ ] Modified file syncs instantly
 - [ ] Multiple files sync correctly
 
 ### Folder Structure Test
+
 - [ ] Folders appear in Bitburner
 - [ ] Can run scripts with folder paths
 - [ ] Structure matches local filesystem
 
 ### Performance Test
-- GitHub method time: _____ seconds
-- Remote API time: _____ seconds
-- Speed improvement: _____x faster
+
+- GitHub method time: **\_** seconds
+- Remote API time: **\_** seconds
+- Speed improvement: **\_**x faster
 
 ### Existing Scripts Test
+
 - [ ] profit-scan.js works
 - [ ] profit-scan-flex.js works
 - [ ] attack-hack.js works
 - [ ] Other scripts work without modification
 
 ### Reliability Test
+
 - [ ] Reconnects after sleep/wake
 - [ ] Reconnects after server restart
 - [ ] No data loss during disconnection
@@ -415,6 +442,7 @@ Fill this out as you test:
 ### Problem: "Failed to connect to Remote API"
 
 **Solutions:**
+
 1. Verify server is running: Check the `npm run watch` window
 2. Check port: Should see "listening on port 12525"
 3. Test network:
@@ -427,6 +455,7 @@ Fill this out as you test:
 ### Problem: "Files not syncing"
 
 **Solutions:**
+
 1. Check server console for errors
 2. Verify file is in `src/` directory (not `dist/`)
 3. Check Bitburner shows "Connected"
@@ -436,6 +465,7 @@ Fill this out as you test:
 ### Problem: "Script not found in Bitburner"
 
 **Solutions:**
+
 1. Check filename in server console output
 2. Use `ls` in Bitburner to see what files exist
 3. Verify file path (folder structure)
@@ -444,6 +474,7 @@ Fill this out as you test:
 ### Problem: "npm run watch" fails
 
 **Solutions:**
+
 1. Delete `node_modules/` and run `npm install` again
 2. Check Node.js version: `node --version` (need 16+)
 3. Try `npm run build` first to see specific errors
@@ -455,23 +486,23 @@ Fill this out as you test:
 
 After completing the tests, document:
 
-1. **What worked well:**
-   - 
-   
+1. ## **What worked well:**
 2. **What didn't work:**
-   - 
+
+   -
 
 3. **Performance gains:**
-   - GitHub method: ___ seconds
-   - Remote API: ___ seconds
+
+   - GitHub method: \_\_\_ seconds
+   - Remote API: \_\_\_ seconds
 
 4. **Would you adopt this workflow?**
+
    - [ ] Yes, full migration
    - [ ] Yes, dual workflow (Remote API + GitHub)
    - [ ] No, staying with GitHub only
 
-5. **Reasons:**
-   - 
+5. ## **Reasons:**
 
 ---
 
@@ -480,6 +511,7 @@ After completing the tests, document:
 ### If Remote API Works Well:
 
 **Option A: Full Migration**
+
 ```powershell
 # Copy all your scripts to Remote API workspace
 Copy-Item -Recurse C:\Users\YourUsername\bitburner\scripts\* `
@@ -487,6 +519,7 @@ Copy-Item -Recurse C:\Users\YourUsername\bitburner\scripts\* `
 ```
 
 **Option B: Dual Workflow** (Recommended)
+
 - Keep your current GitHub workflow for backups
 - Use Remote API for active development
 - Commit to GitHub when you have stable versions
@@ -511,5 +544,5 @@ Copy-Item -Recurse C:\Users\YourUsername\bitburner\scripts\* `
 
 **Version:** 1.0.0  
 **Last Updated:** 2025-10-26  
-**Based On:** [Official Bitburner Remote API Documentation](https://github.com/bitburner-official/bitburner-src/blob/dev/src/Documentation/doc/en/programming/remote_api.md)
-
+**Based On:**
+[Official Bitburner Remote API Documentation](https://github.com/bitburner-official/bitburner-src/blob/dev/src/Documentation/doc/en/programming/remote_api.md)

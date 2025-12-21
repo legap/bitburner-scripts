@@ -2,7 +2,8 @@
 
 ## Overview
 
-Enhanced `profit-scan-flex.js` to filter zero-value servers BY DEFAULT, with new `--all` flag to show everything. This provides the best user experience out of the box.
+Enhanced `profit-scan-flex.js` to filter zero-value servers BY DEFAULT, with new `--all` flag to show everything. This
+provides the best user experience out of the box.
 
 **Date**: October 26, 2025  
 **Version**: 1.2.0  
@@ -13,12 +14,14 @@ Enhanced `profit-scan-flex.js` to filter zero-value servers BY DEFAULT, with new
 ## Version History
 
 ### v1.2.0 - Default Behavior Change
+
 - **BREAKING CHANGE**: Now filters out zero-money servers by default
 - Added `--all` flag to show ALL servers when needed
 - Removed `--only-money` flag (now default behavior)
 - Significantly improved user experience
 
 ### v1.1.1 - Filter Enhancement
+
 - Enhanced `--only-money` flag to work during both generation and display
 - Fixed incomplete filtering bug
 
@@ -27,7 +30,9 @@ Enhanced `profit-scan-flex.js` to filter zero-value servers BY DEFAULT, with new
 ## Problem Statement
 
 ### Issue
-The `--only-money` flag only filtered servers during the profiler-overrides.json generation phase (line 79) but not during the display output phase (lines 132-180). This caused:
+
+The `--only-money` flag only filtered servers during the profiler-overrides.json generation phase (line 79) but not
+during the display output phase (lines 132-180). This caused:
 
 - Purchased servers (`pserv-1` through `pserv-14`) still appearing with `0.00 $/s/thread`
 - `home` server appearing despite having no money to hack
@@ -35,7 +40,10 @@ The `--only-money` flag only filtered servers during the profiler-overrides.json
 - Cluttered output with 16+ irrelevant zero-value entries
 
 ### User Impact
-Users running `run profit-scan-flex.js --only-money` expected clean output showing only profitable targets, but still saw all their purchased servers and other zero-money servers in the results, making it harder to identify actual targets.
+
+Users running `run profit-scan-flex.js --only-money` expected clean output showing only profitable targets, but still
+saw all their purchased servers and other zero-money servers in the results, making it harder to identify actual
+targets.
 
 ---
 
@@ -52,16 +60,17 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ```
 
 **Location in Code Flow**:
+
 ```javascript
 // Compute rows using overrides (if present) or fallback to NS API
 const rows = [];
 for (const h of hosts2) {
   try {
     const maxMoney = ns.getServerMaxMoney(h);
-    
+
     // Apply --only-money filter to display output  ⬅️ NEW
     if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;  ⬅️ NEW
-    
+
     const minSec = ns.getServerMinSecurityLevel(h);
     const curSec = ns.getServerSecurityLevel(h);
     // ... rest of row processing
@@ -70,6 +79,7 @@ for (const h of hosts2) {
 ### How It Works
 
 1. **During Override Generation** (line 79):
+
    - If `--only-money` flag is present, only rooted servers with money are added to cache
    - Creates `profiler-overrides.json` with only profitable targets
 
@@ -81,12 +91,14 @@ for (const h of hosts2) {
 ### Filter Behavior
 
 **Filters Out** (when `--only-money` is used):
+
 - ❌ Purchased servers (`pserv-*`) - maxMoney = 0
 - ❌ `home` server - maxMoney = 0
 - ❌ `darkweb` - maxMoney = 0
 - ❌ Any server with maxMoney ≤ 0
 
 **Shows** (when `--only-money` is used):
+
 - ✅ Currently hackable targets (rooted + money > 0)
 - ✅ Future targets (not rooted yet, but money > 0)
 - ✅ All servers with actual money to hack
@@ -96,6 +108,7 @@ for (const h of hosts2) {
 ## Results
 
 ### Before Fix
+
 ```
 [home /]> run profit-scan-flex.js --only-money
 ...
@@ -109,6 +122,7 @@ profit-scan-flex.js: (showing 30 of 96 reachable hosts)
 ```
 
 ### After Fix
+
 ```
 [home /]> run profit-scan-flex.js --only-money
 ...
@@ -121,6 +135,7 @@ profit-scan-flex.js: (showing 30 of 63 reachable hosts)
 ```
 
 **Key Improvements**:
+
 - ✅ Purchased servers gone (16 entries removed)
 - ✅ `home` and `darkweb` gone (2 entries removed)
 - ✅ **Total noise removed**: 18 irrelevant entries
@@ -132,18 +147,21 @@ profit-scan-flex.js: (showing 30 of 63 reachable hosts)
 ## Usage
 
 ### Basic Command (v1.2.0+)
+
 ```bash
 # DEFAULT: Shows only money servers
 run profit-scan-flex.js
 ```
 
 ### Show All Servers
+
 ```bash
 # Show ALL servers including purchased servers
 run profit-scan-flex.js --all
 ```
 
 ### Combined with Other Flags
+
 ```bash
 # Show top 50 money-bearing servers (default behavior)
 run profit-scan-flex.js 50
@@ -156,6 +174,7 @@ run profit-scan-flex.js --dry
 ```
 
 ### Legacy Usage (v1.1.1)
+
 ```bash
 # Old way (no longer needed)
 run profit-scan-flex.js --only-money
@@ -169,6 +188,7 @@ run profit-scan-flex.js
 ## Documentation Updates
 
 ### Files Updated
+
 1. ✅ **analysis/profit-scan-flex.js** - Code fix
 2. ✅ **CHANGELOG.md** - Version 1.1.1 release notes
 3. ✅ **docs/SCRIPT_REFERENCE.md** - Enhanced flag documentation
@@ -180,17 +200,20 @@ run profit-scan-flex.js
 ### Key Documentation Sections
 
 **SCRIPT_REFERENCE.md** now includes:
+
 - Detailed `--only-money` flag behavior explanation
 - Clear filter criteria (what's shown vs hidden)
 - Recommendation to use flag for cleaner output
 - Updated examples with flag usage
 
 **README.md** now includes:
+
 - `--only-money` in Basic Usage examples
 - Updated Optimization Tips (#1 tip now)
 - Added to Flags reference section
 
 **CHANGELOG.md** now includes:
+
 - Version 1.1.1 release notes
 - Technical details with code snippet
 - Migration notes for users
@@ -200,12 +223,14 @@ run profit-scan-flex.js
 ## Technical Details
 
 ### Implementation
+
 - **Type**: Display filtering enhancement
 - **Complexity**: Low (2-line change)
 - **Performance Impact**: Minimal (one additional conditional check per server)
 - **Backward Compatibility**: 100% (no breaking changes)
 
 ### Filter Logic
+
 ```javascript
 // Simple and efficient
 if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
@@ -218,6 +243,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ```
 
 ### Edge Cases Handled
+
 - ✅ Servers with `maxMoney = 0`
 - ✅ Servers with `maxMoney = null/undefined`
 - ✅ Servers with negative money (shouldn't exist, but safe)
@@ -229,6 +255,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ## Testing
 
 ### Test Scenarios
+
 1. ✅ **Without flag**: Shows all servers (including pservs)
 2. ✅ **With flag**: Hides zero-money servers
 3. ✅ **With existing cache**: Filters properly
@@ -237,6 +264,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 6. ✅ **Combined with limit**: Works correctly
 
 ### Verification
+
 ```bash
 # Before fix: 96 reachable hosts, showing 30 (includes pservs)
 # After fix: 63 reachable hosts, showing 30 (only money servers)
@@ -249,12 +277,14 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ## Benefits
 
 ### For Users
+
 1. **Cleaner Output** - Focus on actual targets
 2. **Better Decision Making** - See future high-value targets
 3. **Reduced Noise** - No purchased servers cluttering results
 4. **Faster Analysis** - Less scrolling through irrelevant data
 
 ### For Workflow
+
 1. **Consistent Behavior** - Flag works as expected everywhere
 2. **Flexible Usage** - Works with any combination of flags
 3. **No Breaking Changes** - Existing scripts still work
@@ -265,11 +295,13 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ## Migration Notes
 
 ### For Existing Users
+
 - **No action required** - Enhancement is backward compatible
 - **Optional**: Delete old cache and regenerate with `--only-money` for cleaner cached results
 - **Recommended**: Start using `--only-money` flag for cleaner analysis
 
 ### Deployment Steps
+
 1. ✅ Update local `analysis/profit-scan-flex.js` (completed)
 2. ✅ Update documentation files (completed)
 3. ✅ Push to GitHub repository
@@ -281,6 +313,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 ## Future Enhancements
 
 ### Potential Improvements
+
 - Add `--rooted-only` flag to show only rooted servers
 - Add `--unrooted-only` flag to show only future targets
 - Add filtering by minimum money threshold
@@ -288,6 +321,7 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 - Add sorting options (by money, by security, by hack time)
 
 ### Related Features
+
 - Integration with auto-target selection
 - Export filtered results to config file
 - Combine with batch deployment scripts
@@ -297,7 +331,9 @@ if (onlyMoney && (!maxMoney || maxMoney <= 0)) continue;
 
 ## Conclusion
 
-The `--only-money` flag enhancement successfully addresses the output clutter issue by providing comprehensive filtering at both cache generation and display stages. This simple 2-line change delivers significant user experience improvements with zero breaking changes or performance impact.
+The `--only-money` flag enhancement successfully addresses the output clutter issue by providing comprehensive filtering
+at both cache generation and display stages. This simple 2-line change delivers significant user experience improvements
+with zero breaking changes or performance impact.
 
 **Status**: ✅ **Complete, Tested, Documented, and Deployed**
 
@@ -307,4 +343,3 @@ The `--only-money` flag enhancement successfully addresses the output clutter is
 **Last Updated**: October 26, 2025  
 **Author**: AI Assistant  
 **Script Version**: 1.1.1
-

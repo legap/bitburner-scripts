@@ -5,29 +5,31 @@ Complete reference for all scripts in the Bitburner collection.
 ## Core Attack Scripts
 
 ### attack-hack.js
-**Purpose**: Performs hack operations on target servers
-**Usage**: `run attack-hack.js <target>`
-**Parameters**:
+
+**Purpose**: Performs hack operations on target servers **Usage**: `run attack-hack.js <target>` **Parameters**:
+
 - `target` - Server to hack
 
-### attack-grow.js  
-**Purpose**: Performs grow operations on target servers
-**Usage**: `run attack-grow.js <target>`
-**Parameters**:
+### attack-grow.js
+
+**Purpose**: Performs grow operations on target servers **Usage**: `run attack-grow.js <target>` **Parameters**:
+
 - `target` - Server to grow
 
 ### attack-weaken.js
+
 **Purpose**: Performs weaken operations on target servers  
-**Usage**: `run attack-weaken.js <target>`
-**Parameters**:
+**Usage**: `run attack-weaken.js <target>` **Parameters**:
+
 - `target` - Server to weaken
 
 ## Batch Management Scripts
 
 ### simple-batcher.js
-**Purpose**: Deploy attack helpers across reachable servers
-**Usage**: `run simple-batcher.js <target> [capThreads] [--include-home] [--quiet] [--dry]`
-**Parameters**:
+
+**Purpose**: Deploy attack helpers across reachable servers **Usage**:
+`run simple-batcher.js <target> [capThreads] [--include-home] [--quiet] [--dry]` **Parameters**:
+
 - `target` - Server to attack
 - `capThreads` - Maximum threads per server (optional)
 - `--include-home` - Include home server in operations
@@ -35,6 +37,7 @@ Complete reference for all scripts in the Bitburner collection.
 - `--dry` - Show what would happen without executing
 
 **Examples**:
+
 ```bash
 run simple-batcher.js joesguns
 run simple-batcher.js joesguns 100
@@ -43,9 +46,11 @@ run simple-batcher.js joesguns --dry
 ```
 
 ### batch-manager.js ⭐ v1.8.10
-**Purpose**: Enhanced batch manager with auto-rooting, instant RAM detection, and intelligent monitoring - deploys smart-batcher.js
-**Usage**: `run batch-manager.js [target] [hackPercent] [multiplier] [pservHost] [flags...]`
+
+**Purpose**: Enhanced batch manager with auto-rooting, instant RAM detection, and intelligent monitoring - deploys
+smart-batcher.js **Usage**: `run batch-manager.js [target] [hackPercent] [multiplier] [pservHost] [flags...]`
 **Parameters**:
+
 - `target` - Server to attack (default: joesguns)
 - `hackPercent` - Percentage of server money to hack per batch (default: 0.05 = 5%)
 - `multiplier` - Batch timing multiplier (default: 1.25)
@@ -55,6 +60,7 @@ run simple-batcher.js joesguns --dry
   - `--no-root` - Disable automatic server rooting
 
 **Features**:
+
 - 🚀 Automatically deploys 490x more efficient smart-batcher
 - ⚡ **Instant RAM detection** - Detects server upgrades within one cycle (~85s)
 - 📊 **Enhanced reporting** - Shows both RAM increase and current size per server
@@ -65,6 +71,7 @@ run simple-batcher.js joesguns --dry
 - 🔕 Clean logs - 23 API calls silenced for spam-free monitoring
 
 **Examples**:
+
 ```bash
 run batch-manager.js omega-net                        # Recommended
 run batch-manager.js omega-net 0.05 1.25 home --quiet # Quiet mode
@@ -73,6 +80,7 @@ run batch-manager.js --quiet                          # Use all defaults (5% hac
 ```
 
 **What You'll See**:
+
 ```
 ============================================================
 BATCH MANAGER v1.8.10 - Starting...
@@ -92,37 +100,41 @@ Deploying batch/smart-batcher.js on home...
 ```
 
 **Key Improvements**:
+
 - **v1.8.10**: Enhanced RAM reporting (shows increase + current size)
 - **v1.8.9**: Instant RAM detection every cycle (vs every 10 cycles)
 - **v1.8.8**: LOG window support + comprehensive monitoring
 
 **RAM Upgrade Detection**:
+
 - Checks RAM **every cycle** (~85 seconds for typical targets)
 - Detects upgrades **14x faster** than previous version
 - Automatically redeploys smart-batcher with expanded fleet
 - Shows clear breakdown: total change, per-server increase, current size
 
 ### smart-batcher.js ⭐ RECOMMENDED
-**Purpose**: Intelligent batch deployment with optimal timing-based thread ratios
-**Performance**: 490x improvement over basic batching ($4k/s → $2.09m/s)
-**Compatibility**: ✅ v3.0.0 and v2.8.1
-**Usage**: `run smart-batcher.js <target> [hackPercent] [--include-home] [--quiet] [--dry]`
+
+**Purpose**: Intelligent batch deployment with optimal timing-based thread ratios **Performance**: 490x improvement over
+basic batching ($4k/s → $2.09m/s) **Compatibility**: ✅ v3.0.0 and v2.8.1 **Usage**:
+`run smart-batcher.js <target> [hackPercent] [--include-home] [--quiet] [--dry]`
 
 **Parameters**:
+
 - `target` - Server to attack (required)
 - `hackPercent` - Percentage of server money to hack per batch (default: 0.05 = 5%)
 - `--include-home` - Include home server in deployment
 - `--quiet` - Reduce output verbosity
 - `--dry` - Show analysis and plan without deploying
 
-**Key Innovation**: 
-Calculates optimal thread ratios based on timing analysis instead of arbitrary allocation:
+**Key Innovation**: Calculates optimal thread ratios based on timing analysis instead of arbitrary allocation:
+
 ```
 Traditional: 25% hack / 45% grow / 30% weaken (inefficient)
 Smart:        4% hack / 87% grow /  9% weaken (optimal)
 ```
 
 **Features**:
+
 - 📊 Intelligent ratio calculator based on security mechanics
 - ⚖️ Timing analysis (batch window, efficiency)
 - 💰 Production estimates (expected income after prep)
@@ -131,6 +143,7 @@ Smart:        4% hack / 87% grow /  9% weaken (optimal)
 - ⚡ 3-4x faster server preparation time
 
 **Examples**:
+
 ```bash
 run smart-batcher.js joesguns              # Deploy with optimal ratios (5% hack)
 run smart-batcher.js joesguns 0.10         # Hack 10% of server per batch
@@ -140,12 +153,14 @@ run smart-batcher.js joesguns --include-home  # Include home server
 ```
 
 **Real Performance**:
+
 - Deployed across 56 servers
 - 1304 threads (45 hack / 1119 grow / 140 weaken)
 - Server prepped to 97% in 6 minutes
 - Sustained **$2.09m/s** production ($7.5 billion/hour)
 
 **Why It Works**:
+
 1. Grow operations take 3-4x longer than hack
 2. Needs proportionally more grow threads to maintain balance
 3. 87% grow allocation enables exponential money growth
@@ -155,9 +170,10 @@ run smart-batcher.js joesguns --include-home  # Include home server
 ## Analysis Scripts
 
 ### profit-scan.js
-**Purpose**: Print ranked list of servers by estimated profit/sec
-**Usage**: `run profit-scan.js`
-**Output**: Shows top 30 most profitable targets with:
+
+**Purpose**: Print ranked list of servers by estimated profit/sec **Usage**: `run profit-scan.js` **Output**: Shows top
+30 most profitable targets with:
+
 - Server name
 - Root access status
 - RAM available
@@ -168,15 +184,17 @@ run smart-batcher.js joesguns --include-home  # Include home server
 - Money per second per thread
 
 ### profit-scan-flex.js ⭐
-**Purpose**: Advanced profit scanner with current and FLEET POTENTIAL rankings
-**Usage**: `run profit-scan-flex.js [limit] [--save] [--all] [--optimal]`
-**Parameters**:
+
+**Purpose**: Advanced profit scanner with current and FLEET POTENTIAL rankings **Usage**:
+`run profit-scan-flex.js [limit] [--save] [--all] [--optimal]` **Parameters**:
+
 - `limit` - Number of servers to display (default: 30)
 - `--save` - Write profiler-overrides.json timing cache file
 - `--all` - Show ALL servers including zero-money servers (purchased servers, home, darkweb)
 - `--optimal` - Rank by FLEET POTENTIAL (capacity + efficiency) instead of current state
 
 **Features**:
+
 - **Fleet Potential Rankings** 🎯 - Balances capacity + efficiency for large fleets (v1.5.3 fix)
 - **Fleet Score Formula** - Per-thread income × log10(Max Money)
 - **Prep Status Indicators** - See if servers are ready (✓), need light prep (◐), or heavy prep (⚠)
@@ -188,6 +206,7 @@ run smart-batcher.js joesguns --include-home  # Include home server
 - **Smart Filtering** - Automatically hides zero-money servers for clean output
 
 **Examples**:
+
 ```bash
 run profit-scan-flex.js                    # DEFAULT: Current state, money servers, top 30
 run profit-scan-flex.js --optimal          # Rank by POTENTIAL (find hidden gems!)
@@ -197,11 +216,11 @@ run profit-scan-flex.js --optimal --save   # Optimal rankings + save timing data
 ```
 
 **Ranking Modes**:
+
 - **Current Mode (default)**: Ranks by as-is performance (current security/money)
   - Shows what servers produce RIGHT NOW
   - Hints at potential for servers with 2x+ improvement possible
   - Best for: Finding immediately profitable targets
-  
 - **Fleet Potential Mode (`--optimal`)**: Ranks by FLEET POTENTIAL (capacity + efficiency)
   - Uses Fleet Score = Per-thread income × log10(Max Money)
   - Balances efficiency with max money capacity
@@ -209,11 +228,13 @@ run profit-scan-flex.js --optimal --save   # Optimal rankings + save timing data
   - Best for: Large fleets (100-2000 threads) needing high-capacity targets
 
 **Prep Status Indicators**:
+
 - ✓ READY - At/near min security, farm immediately
 - ◐ LIGHT PREP - Needs weakening (security delta > 50% of min)
 - ⚠ HEAVY PREP - Needs significant prep (security delta > 200% of min)
 
 **Real-World Example (v1.5.3 - Fixed)**:
+
 ```
 Current Rankings:           Fleet Potential Rankings:
 1. silver-helix 16.91k/s    1. phantasy        Score: 196k ($600m)
@@ -225,11 +246,13 @@ Current Rankings:           Fleet Potential Rankings:
 ```
 
 **Key Insight**: silver-helix (#2) is often better than phantasy (#1) because:
+
 - Already at optimal state (no prep time)
 - 2x larger capacity ($1.13b vs $600m)
 - Proven $3.41m/s production
 
 **Output Display**:
+
 - Server name, root status, RAM capacity
 - Prep status indicator (✓/◐/⚠)
 - Max money, security (current/min with delta)
@@ -239,30 +262,32 @@ Current Rankings:           Fleet Potential Rankings:
 - Potential after prep (when applicable)
 
 ### production-monitor.js
-**Purpose**: Measure player money change over time
-**Usage**: `run production-monitor.js [seconds]`
-**Parameters**:
+
+**Purpose**: Measure player money change over time **Usage**: `run production-monitor.js [seconds]` **Parameters**:
+
 - `seconds` - Monitoring duration (default: 60)
 
 **Examples**:
+
 ```bash
 run production-monitor.js 60
 run production-monitor.js 300
 ```
 
 ### server-info.js
-**Purpose**: Display detailed server information
-**Usage**: `run server-info.js [server]`
-**Parameters**:
+
+**Purpose**: Display detailed server information **Usage**: `run server-info.js [server]` **Parameters**:
+
 - `server` - Server to analyze (optional, defaults to current)
 
 ## Utility Scripts
 
 ### global-kill.js
-**Purpose**: Kill all running scripts across all servers with 100% reliability
-**Usage**: `run utils/global-kill.js`
+
+**Purpose**: Kill all running scripts across all servers with 100% reliability **Usage**: `run utils/global-kill.js`
 
 **Enhanced Features** ✨:
+
 - Uses `ns.killall()` for efficient bulk operations
 - Strategic 50ms delays between servers ensure proper process termination
 - Processes all remote servers first, saves current host for last
@@ -270,19 +295,20 @@ run production-monitor.js 300
 - Clear feedback with ✓ indicator and process counts
 
 **Example Output**:
+
 ```
 ✓ Killed 147 processes across 56 servers.
 ```
 
-**Why Enhanced**:
-Previous version had timing issues causing some processes to survive. The enhanced version eliminates race conditions and provides 100% reliable termination across your entire network.
+**Why Enhanced**: Previous version had timing issues causing some processes to survive. The enhanced version eliminates
+race conditions and provides 100% reliable termination across your entire network.
 
 **Note**: Does not kill the global-kill.js script itself
 
 ### list-procs.js
-**Purpose**: List all running processes across all servers
-**Usage**: `run list-procs.js`
-**Output**: Shows:
+
+**Purpose**: List all running processes across all servers **Usage**: `run list-procs.js` **Output**: Shows:
+
 - Server name
 - Script name
 - Thread count
@@ -290,9 +316,9 @@ Previous version had timing issues causing some processes to survive. The enhanc
 - Process ID
 
 ### list-pservs.js
-**Purpose**: List all purchased servers and their status
-**Usage**: `run list-pservs.js`
-**Output**: Shows:
+
+**Purpose**: List all purchased servers and their status **Usage**: `run list-pservs.js` **Output**: Shows:
+
 - Server name
 - RAM capacity
 - Used RAM
@@ -301,51 +327,53 @@ Previous version had timing issues causing some processes to survive. The enhanc
 - Available money
 
 ### share-ram.js
-**Purpose**: Share free RAM with faction for reputation bonus multiplier
-**Usage**: `run utils/share-ram.js`
+
+**Purpose**: Share free RAM with faction for reputation bonus multiplier **Usage**: `run utils/share-ram.js`
 **Features**:
+
 - Continuously calls `ns.share()` to maintain 10-second reputation bonus
 - **Optimized RAM usage: Exactly 4.00GB** - perfect for memory in multiples of 4GB
 - Can run on any server with free RAM
-- Minimal overhead for maximum efficiency
-**Note**: Use with `deploy/deploy-share-all.js` to deploy across entire network for maximum faction reputation gains. The 4GB optimization ensures perfect RAM utilization (e.g., 8GB = 2 instances, 16GB = 4 instances).
+- Minimal overhead for maximum efficiency **Note**: Use with `deploy/deploy-share-all.js` to deploy across entire
+  network for maximum faction reputation gains. The 4GB optimization ensures perfect RAM utilization (e.g., 8GB = 2
+  instances, 16GB = 4 instances).
 
 ### test-formulas.js 🔮
-**Purpose**: Test Formulas.exe installation and functionality
-**Usage**: `run utils/test-formulas.js`
-**Features**:
+
+**Purpose**: Test Formulas.exe installation and functionality **Usage**: `run utils/test-formulas.js` **Features**:
+
 - Verifies Formulas.exe is properly installed
 - Tests all formula calculation functions
 - Shows exact hack chance, timing, and growth calculations
-- Displays player stats integration
-**Requirements**: Formulas.exe ($5 billion from Dark Web)
-**Note**: Run this first after purchasing Formulas.exe to verify it's working
+- Displays player stats integration **Requirements**: Formulas.exe ($5 billion from Dark Web) **Note**: Run this first
+  after purchasing Formulas.exe to verify it's working
 
 ### f-estimate-production.js 🔮
-**Purpose**: EXACT production rate calculations using Formulas.exe
-**Usage**: `run analysis/f-estimate-production.js [target]`
-**Features**:
+
+**Purpose**: EXACT production rate calculations using Formulas.exe **Usage**:
+`run analysis/f-estimate-production.js [target]` **Features**:
+
 - Perfect accuracy using `ns.formulas.hacking.*` API
 - Shows both current AND optimal state projections
 - Calculates exact improvement percentages from prep
 - Zero estimation error - all calculations are precise
-- Accounts for your exact player stats and multipliers
-**Requirements**: Formulas.exe ($5 billion from Dark Web)
-**Note**: Use this instead of estimate-production.js for guaranteed accurate predictions
+- Accounts for your exact player stats and multipliers **Requirements**: Formulas.exe ($5 billion from Dark Web)
+  **Note**: Use this instead of estimate-production.js for guaranteed accurate predictions
 
 ## Server Management Scripts
 
 ### purchase-server-8gb.js
-**Purpose**: Purchase servers with 8GB RAM
-**Usage**: `run purchase-server-8gb.js`
-**Features**:
+
+**Purpose**: Purchase servers with 8GB RAM **Usage**: `run purchase-server-8gb.js` **Features**:
+
 - Checks available funds
 - Verifies server limit
 - Automatically names servers (pserv-1, pserv-2, etc.)
 
 ### replace-pservs-no-copy.js
-**Purpose**: Upgrade all purchased servers to higher RAM capacity
-**Usage**: 
+
+**Purpose**: Upgrade all purchased servers to higher RAM capacity **Usage**:
+
 ```bash
 run deploy/replace-pservs-no-copy.js           # Show upgrade options
 run deploy/replace-pservs-no-copy.js 32        # Upgrade to 32GB
@@ -353,13 +381,16 @@ run deploy/replace-pservs-no-copy.js 128       # Upgrade to 128GB
 ```
 
 **Features**:
+
 - Shows current RAM, available upgrade options, and costs
 - Validates you have sufficient funds before starting
 - Deletes old servers and purchases new ones with same names
 - Tracks success/failure for each server
 - Displays total RAM after upgrade
 
-**Important**: Batch-manager should automatically detect the upgraded servers on its next cycle. If it doesn't restart automatically, you can manually restart:
+**Important**: Batch-manager should automatically detect the upgraded servers on its next cycle. If it doesn't restart
+automatically, you can manually restart:
+
 ```bash
 run utils/global-kill.js                                 # Kill all processes
 run batch/batch-manager.js joesguns --quiet              # Restart batch manager (uses defaults)
@@ -368,62 +399,64 @@ run batch/batch-manager.js joesguns --quiet              # Restart batch manager
 **Note**: Does not preserve scripts on servers (they're redeployed automatically by batch-manager)
 
 ### home-batcher.js
-**Purpose**: Home server batch operations
-**Usage**: `run batch/home-batcher.js [target]`
-**Parameters**:
+
+**Purpose**: Home server batch operations **Usage**: `run batch/home-batcher.js [target]` **Parameters**:
+
 - `target` - Server to attack (default: joesguns)
 
 ## Deployment Scripts
 
 ### deploy-share-all.js
-**Purpose**: Deploy RAM sharing across entire network for maximum faction reputation bonus
-**Usage**: `run deploy/deploy-share-all.js`
-**Features**:
+
+**Purpose**: Deploy RAM sharing across entire network for maximum faction reputation bonus **Usage**:
+`run deploy/deploy-share-all.js` **Features**:
+
 - Scans entire network for all rooted servers
 - Deploys `utils/share-ram.js` to maximize reputation bonus
 - Reserves 64GB on home for other operations
 - Shows deployment status with thread counts per server
-- Reports total sharing capacity
-**Note**: The faction reputation bonus scales with total shared RAM across all servers. The bonus updates every 10 seconds.
+- Reports total sharing capacity **Note**: The faction reputation bonus scales with total shared RAM across all servers.
+  The bonus updates every 10 seconds.
 
 ## Formula-Enhanced Scripts (Formulas.exe Required) 🔮
 
 ### f-profit-scan-flex.js ⭐ EXACT TARGET SELECTION
-**Purpose**: Find best hacking targets with PERFECT calculations (zero error)
-**Usage**: `run analysis/f-profit-scan-flex.js [limit] [--optimal] [--all] [--save]`
-**Features**:
+
+**Purpose**: Find best hacking targets with PERFECT calculations (zero error) **Usage**:
+`run analysis/f-profit-scan-flex.js [limit] [--optimal] [--all] [--save]` **Features**:
+
 - Uses `ns.formulas.hacking.*` for EXACT calculations (no estimates)
 - Perfect hack chance calculations at optimal and current states
 - Exact timing calculations with your player stats
 - Flawless optimal state projections
-- Shows exact improvement percentages after prep
-**Requirements**: Formulas.exe ($5 billion from Dark Web)
-**Examples**:
+- Shows exact improvement percentages after prep **Requirements**: Formulas.exe ($5 billion from Dark Web) **Examples**:
+
 ```bash
 run analysis/f-profit-scan-flex.js            # exact current state rankings
 run analysis/f-profit-scan-flex.js --optimal  # exact potential rankings
 run analysis/f-profit-scan-flex.js 50         # top 50 targets
 ```
+
 **Note**: This is the ultimate target selection tool - every number is guaranteed accurate
 
 ### deploy-hack-joesguns.js
-**Purpose**: Deploy joesguns hack script to servers
-**Usage**: `run deploy-hack-joesguns.js [target]`
-**Parameters**:
+
+**Purpose**: Deploy joesguns hack script to servers **Usage**: `run deploy-hack-joesguns.js [target]` **Parameters**:
+
 - `target` - Server to attack (default: joesguns)
 
 ### hack-joesguns.js
-**Purpose**: Alternative hack script for joesguns
-**Usage**: `run hack-joesguns.js`
-**Features**:
+
+**Purpose**: Alternative hack script for joesguns **Usage**: `run hack-joesguns.js` **Features**:
+
 - Automatic target selection
 - Security and money threshold management
 - Continuous operation
 
 ### hack-n00dles.js
-**Purpose**: Early game hack script for n00dles
-**Usage**: `run hack-n00dles.js`
-**Features**:
+
+**Purpose**: Early game hack script for n00dles **Usage**: `run hack-n00dles.js` **Features**:
+
 - Optimized for early game
 - Simple target selection
 - Basic security management
@@ -431,12 +464,14 @@ run analysis/f-profit-scan-flex.js 50         # top 50 targets
 ## Monitoring Scripts
 
 ### estimate-production.js ⭐ ENHANCED
-**Purpose**: Estimate REALISTIC production rates with batch-cycle-aware calculations
-**Usage**: `run estimate-production.js [target]`
-**Parameters**:
+
+**Purpose**: Estimate REALISTIC production rates with batch-cycle-aware calculations **Usage**:
+`run estimate-production.js [target]` **Parameters**:
+
 - `target` - Server to analyze (default: joesguns)
 
 **What's New**:
+
 - ✅ Realistic batch cycle calculations (not misleading continuous hack rates)
 - ✅ Shows server prep status (current money as % of max)
 - ✅ Calculates actual batches per minute
@@ -444,6 +479,7 @@ run analysis/f-profit-scan-flex.js 50         # top 50 targets
 - ✅ Warns if server needs preparation
 
 **Output Sections**:
+
 1. **Production Estimate**: Server stats and timing analysis
 2. **Batch Cycle Analysis**: Realistic batch window and intervals
 3. **Realistic Production Estimates**: Income per thread (1, 5, 10, 25, 50, 100)
@@ -451,6 +487,7 @@ run analysis/f-profit-scan-flex.js 50         # top 50 targets
 5. **Warnings**: Server prep status
 
 **Example Output**:
+
 ```
 === Batch Cycle Analysis ===
 Batch Cycle Time: 22.32s
@@ -471,9 +508,9 @@ Batch efficiency: 20.0%
 **Key Insight**: Estimates now match actual measured production (use with `production-monitor.js` to verify)
 
 ### production-monitor.js
-**Purpose**: Monitor money generation over time
-**Usage**: `run production-monitor.js [seconds]`
-**Parameters**:
+
+**Purpose**: Monitor money generation over time **Usage**: `run production-monitor.js [seconds]` **Parameters**:
+
 - `seconds` - Monitoring duration (default: 60)
 
 ## Advanced Usage
@@ -481,6 +518,7 @@ Batch efficiency: 20.0%
 ### Script Combinations
 
 #### Basic Setup
+
 ```bash
 # Find best targets
 run profit-scan.js
@@ -493,6 +531,7 @@ run production-monitor.js 300
 ```
 
 #### Advanced Setup (Recommended with smart-batcher)
+
 ```bash
 # Find best target with realistic estimates
 run profit-scan-flex.js
@@ -511,6 +550,7 @@ run estimate-production.js joesguns
 ```
 
 #### Alternative Setup (with batch-manager)
+
 ```bash
 # Purchase servers
 run purchase-server-8gb.js
@@ -524,6 +564,7 @@ run list-pservs.js
 ```
 
 #### Troubleshooting
+
 ```bash
 # Check what's running
 run list-procs.js
@@ -539,36 +580,43 @@ run production-monitor.js 60
 ## Script Dependencies
 
 ### Required Helper Scripts
+
 - `attack-hack.js`
 - `attack-grow.js`
 - `attack-weaken.js`
 
 ### Optional Scripts
+
 - `hack-joesguns.js`
 - `hack-n00dles.js`
 
 ### Configuration Files
+
 - `config/default-targets.js` - Predefined target lists
 - `config/recommended-settings.js` - Recommended configurations
 
 ## Best Practices
 
 ### 1. Start Simple
+
 - Begin with basic scripts on easy targets
 - Use monitoring tools to track progress
 - Gradually increase complexity
 
 ### 2. Monitor Performance
+
 - Use `profit-scan.js` to find better targets
 - Monitor production with `production-monitor.js`
 - Check system status with `list-procs.js`
 
 ### 3. Scale Appropriately
+
 - Start with small thread counts
 - Gradually increase as you gain resources
 - Use batch management for automation
 
 ### 4. Troubleshoot Issues
+
 - Check RAM usage with `list-procs.js`
 - Verify server access with `list-pservs.js`
 - Use `global-kill.js` to reset if needed
@@ -580,6 +628,7 @@ run production-monitor.js 60
 For comprehensive documentation on the complete 7-script stock trading suite, see:
 
 **[STOCK_TRADING_GUIDE.md](STOCK_TRADING_GUIDE.md)** - Complete stock trading guide including:
+
 - `stock-info.js` - Market intelligence viewer
 - `stock-trader-basic.js` - Forecast-based automated trading
 - `stock-trader-advanced.js` - Advanced strategies with dynamic sizing
@@ -590,4 +639,5 @@ For comprehensive documentation on the complete 7-script stock trading suite, se
 
 ---
 
-**Note**: This reference covers core automation scripts. For stock trading, see STOCK_TRADING_GUIDE.md. For specific usage examples, see the individual script headers and the Getting Started guide.
+**Note**: This reference covers core automation scripts. For stock trading, see STOCK_TRADING_GUIDE.md. For specific
+usage examples, see the individual script headers and the Getting Started guide.

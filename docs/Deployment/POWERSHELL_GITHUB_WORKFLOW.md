@@ -10,7 +10,7 @@ Use PowerShell to push your **organized folder structure** directly to GitHub!
 ✅ **Push with one command** - PowerShell automation  
 ✅ **Preserve structure on GitHub** - Better for development  
 ✅ **Auto-flatten in Bitburner** - Update script handles it  
-✅ **Full Git features** - Branches, history, rollback  
+✅ **Full Git features** - Branches, history, rollback
 
 ---
 
@@ -34,6 +34,7 @@ Run this in PowerShell from your project directory:
 ```
 
 **What it does:**
+
 - Creates .gitignore (if needed)
 - Initializes Git repository
 - Adds all your organized folders
@@ -68,6 +69,7 @@ run bitburner-update.js --all
 ```
 
 **You should see:**
+
 ```
 === Bitburner Script Update ===
 Base URL: https://raw.githubusercontent.com/...
@@ -107,28 +109,31 @@ That's it! Three simple steps.
 ## 📝 Push Script Options
 
 ### Basic Push
+
 ```powershell
 .\Push-ToGitHub.ps1 -RepoUrl "URL" -CommitMessage "Your message"
 ```
 
 ### First Time Setup
+
 ```powershell
 .\Push-ToGitHub.ps1 -RepoUrl "URL" -FirstTime
 ```
 
 ### Different Branch
+
 ```powershell
 .\Push-ToGitHub.ps1 -RepoUrl "URL" -Branch "dev" -CommitMessage "Experimental feature"
 ```
 
 ### Parameters
 
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `-RepoUrl` | Yes | - | Your GitHub repo URL |
-| `-CommitMessage` | No | "Update scripts" | Commit message |
-| `-Branch` | No | "main" | Branch name |
-| `-FirstTime` | No | False | Use for initial setup |
+| Parameter        | Required | Default          | Description           |
+| ---------------- | -------- | ---------------- | --------------------- |
+| `-RepoUrl`       | Yes      | -                | Your GitHub repo URL  |
+| `-CommitMessage` | No       | "Update scripts" | Commit message        |
+| `-Branch`        | No       | "main"           | Branch name           |
+| `-FirstTime`     | No       | False            | Use for initial setup |
 
 ---
 
@@ -165,6 +170,7 @@ GitHub Repository
 ```
 
 **In Bitburner** (flat):
+
 ```
 home/
 ├── attack-hack.js
@@ -181,22 +187,25 @@ The `bitburner-update.js` script handles downloading from folders to flat struct
 ## 💡 How It Works
 
 ### GitHub Side (Organized)
+
 ```
 Your organized folders → GitHub maintains structure
 ```
 
 ### Bitburner Side (Flat)
+
 ```
 bitburner-update.js reads from:
   core/attack-hack.js
   batch/simple-batcher.js
-  
+
 Saves to Bitburner home as:
   attack-hack.js
   simple-batcher.js
 ```
 
 **Best of both worlds:**
+
 - ✅ Organized on GitHub for development
 - ✅ Flat in Bitburner (as required by the game)
 
@@ -241,6 +250,7 @@ git reset --soft HEAD~1
 ### "Git is not installed"
 
 **Solution:**
+
 1. Download Git from: https://git-scm.com/download/win
 2. Install with default options
 3. Restart PowerShell
@@ -263,6 +273,7 @@ git reset --soft HEAD~1
 ### "Push rejected"
 
 **If someone else pushed first:**
+
 ```powershell
 git pull origin main
 git push
@@ -271,6 +282,7 @@ git push
 ### "Files not showing on GitHub"
 
 **Check .gitignore:**
+
 ```powershell
 # View .gitignore
 Get-Content .gitignore
@@ -304,6 +316,7 @@ git checkout -- filename.js
 ### Create .gitignore Rules
 
 Edit `.gitignore` to exclude files:
+
 ```
 # Exclude logs
 *.log
@@ -322,13 +335,13 @@ temp/
 
 ## 📊 Comparison: PowerShell vs Manual
 
-| Task | PowerShell Script | Manual Process |
-|------|-------------------|----------------|
-| **Initial Setup** | One command | Multiple Git commands |
-| **Regular Push** | One command | Stage, commit, push |
-| **Error Handling** | Automatic | Manual troubleshooting |
-| **Status Check** | Built-in | Separate command |
-| **URL Display** | Automatic | Manual construction |
+| Task               | PowerShell Script | Manual Process         |
+| ------------------ | ----------------- | ---------------------- |
+| **Initial Setup**  | One command       | Multiple Git commands  |
+| **Regular Push**   | One command       | Stage, commit, push    |
+| **Error Handling** | Automatic         | Manual troubleshooting |
+| **Status Check**   | Built-in          | Separate command       |
+| **URL Display**    | Automatic         | Manual construction    |
 
 ---
 
@@ -362,6 +375,7 @@ Local Machine (Organized)
 ## ✅ Checklist
 
 ### Initial Setup
+
 - [ ] Installed Git
 - [ ] Created GitHub repository
 - [ ] Copied repository URL
@@ -371,6 +385,7 @@ Local Machine (Organized)
 - [ ] First update successful in Bitburner
 
 ### Daily Workflow
+
 - [ ] Edit scripts in organized folders
 - [ ] Run Push-ToGitHub.ps1 with commit message
 - [ ] Run bitburner-update.js in game
@@ -404,6 +419,7 @@ git remote -v
 You now have a professional Git workflow while maintaining your organized folder structure!
 
 **Benefits:**
+
 - ✅ Organized folders on GitHub
 - ✅ One-command pushes
 - ✅ Full Git history
@@ -411,6 +427,7 @@ You now have a professional Git workflow while maintaining your organized folder
 - ✅ Automatic flattening in Bitburner
 
 **Next Steps:**
+
 1. Make changes to your scripts
 2. Run the push script
 3. Update in Bitburner
@@ -419,5 +436,6 @@ You now have a professional Git workflow while maintaining your organized folder
 ---
 
 **For More Help:**
+
 - Complete guide: [docs/GITHUB_DEPLOYMENT_GUIDE.md](docs/GITHUB_DEPLOYMENT_GUIDE.md)
 - Quick start: [DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)
