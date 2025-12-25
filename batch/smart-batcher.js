@@ -27,7 +27,7 @@ export async function main(ns) {
   ns.disableLog("scan");
 
   const args = ns.args.slice();
-  const target = args.shift();
+  const target = String(args.shift());
   if (!target) {
     ns.tprint("Usage: run smart-batcher.js <target> [hackPercent] [--include-home] [--quiet] [--dry]");
     ns.tprint("Example: run smart-batcher.js joesguns 0.05 --quiet");

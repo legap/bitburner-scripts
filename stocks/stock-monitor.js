@@ -34,7 +34,7 @@ export async function main(ns) {
     return;
   }
 
-  const refreshRate = ns.args[0] || 3000; // Default: 3 seconds
+  const refreshRate = Number(ns.args[0] || 3000); // Default: 3 seconds
   const has4S = ns.stock.has4SDataTIXAPI();
 
   ns.disableLog("ALL");

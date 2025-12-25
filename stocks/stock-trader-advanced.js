@@ -85,11 +85,11 @@ export async function main(ns) {
   }
 
   // Parse parameters
-  const maxStocks = ns.args[0] || 10; // Default: Buy up to 10 different stocks
-  const totalCapital = ns.args[1] || 50e9; // Default: $50 billion total investment
-  const profitTarget = ns.args[2] || 0.15; // Default: 15% profit target
-  const stopLoss = ns.args[3] || 0.1; // Default: 10% stop loss
-  const refreshRate = ns.args[4] || 6000; // Default: 6 seconds
+  const maxStocks = Number(ns.args[0] || 10); // Default: Buy up to 10 different stocks
+  const totalCapital = Number(ns.args[1] || 50e9); // Default: $50 billion total investment
+  const profitTarget = Number(ns.args[2] || 0.15); // Default: 15% profit target
+  const stopLoss = Number(ns.args[3] || 0.1); // Default: 10% stop loss
+  const refreshRate = Number(ns.args[4] || 6000); // Default: 6 seconds
 
   // Validate profit target
   if (profitTarget <= 0 || profitTarget > 1) {

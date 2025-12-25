@@ -67,9 +67,9 @@ export async function main(ns) {
   }
 
   // Parse parameters
-  const maxStocks = ns.args[0] || 10; // Default: Buy up to 10 different stocks
-  const totalCapital = ns.args[1] || 1e9; // Default: $1 billion total investment
-  const refreshRate = ns.args[2] || 6000; // Default: 6 seconds (market updates every 6s)
+  const maxStocks = Number(ns.args[0] || 10); // Default: Buy up to 10 different stocks
+  const totalCapital = Number(ns.args[1] || 1e9); // Default: $1 billion total investment
+  const refreshRate = Number(ns.args[2] || 6000); // Default: 6 seconds (market updates every 6s)
 
   // Calculate per-stock investment accounting for commissions
   // Reserve commission fees: $100k per buy transaction

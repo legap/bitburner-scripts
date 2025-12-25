@@ -59,7 +59,7 @@ export async function main(ns) {
     return;
   }
 
-  const target = ns.args[0] || "joesguns";
+  const target = String(ns.args[0]) || "joesguns";
 
   try {
     const player = ns.getPlayer();

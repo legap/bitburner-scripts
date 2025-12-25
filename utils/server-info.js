@@ -32,7 +32,7 @@ function formatMoney(ns, value, format) {
 
 /** @param {NS} ns */
 export async function main(ns) {
-  const target = ns.args[0] || ns.getHostname();
+  const target = String(ns.args[0]) || ns.getHostname();
 
   try {
     const info = {

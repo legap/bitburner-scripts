@@ -11,7 +11,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
   // Get target from arguments
-  const target = ns.args[0];
+  const target = String(ns.args[0]);
 
   if (!target) {
     ns.tprint("ERROR: No target specified!");

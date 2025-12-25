@@ -40,7 +40,7 @@ export async function main(ns) {
   ns.disableLog("ALL");
 
   // Parse arguments
-  const target = ns.args[0] || "joesguns";
+  const target = String(ns.args[0]) || "joesguns";
   const capArg = ns.args.length > 1 ? Number(ns.args[1]) : Infinity;
   const capThreads = Number.isFinite(capArg) && capArg > 0 ? Math.floor(capArg) : Infinity;
 

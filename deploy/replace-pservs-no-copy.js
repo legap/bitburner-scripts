@@ -41,11 +41,10 @@ export async function main(ns) {
   }
 
   // Available RAM options (must be powers of 2)
-  const ramOptions = [8, 16, 32, 64, 128, 256, 512, 1024];
+  const ramOptions = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576];
 
   // Get target RAM from argument
-  const targetRAM = ns.args[0] ? parseInt(ns.args[0]) : null;
-
+  const targetRAM = ns.args[0] !== undefined ? Number(ns.args[0]) : null;
   ns.tprint("═══════════════════════════════════════════════════");
   ns.tprint("  SERVER UPGRADE TOOL");
   ns.tprint("═══════════════════════════════════════════════════");
@@ -58,9 +57,8 @@ export async function main(ns) {
   if (!targetRAM) {
     ns.tprint("Available upgrade options:");
     ns.tprint("");
-    ns.tprint("RAM | Cost/Server | Total Cost | Status");
-    ns.tprint("----+-------------+------------+--------");
-
+    ns.tprint(" RAM     | Cost/Server | Total Cost | Status");
+    ns.tprint("---------+-------------+------------+--------");
     for (const ram of ramOptions) {
       if (ram <= currentRAM) continue; // Skip downgrades and same size
 

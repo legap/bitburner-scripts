@@ -51,7 +51,7 @@ export async function main(ns) {
     return;
   }
 
-  const cyclesToRun = ns.args[0] || 5; // Default: 5 cycles (30 seconds at 6s/cycle)
+  const cyclesToRun = Number(ns.args[0] || 5); // Default: 5 cycles (30 seconds at 6s/cycle)
   const refreshRate = 6000; // 6 seconds to match market updates
   const has4S = ns.stock.has4SDataTIXAPI();
 

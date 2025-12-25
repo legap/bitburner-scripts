@@ -45,7 +45,7 @@ function formatMoney(ns, value, format) {
 
 /** @param {NS} ns */
 export async function main(ns) {
-  const target = ns.args[0] || "joesguns";
+  const target = String(ns.args[0]) || "joesguns";
 
   try {
     const maxMoney = ns.getServerMaxMoney(target);
