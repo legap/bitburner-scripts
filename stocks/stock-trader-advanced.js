@@ -120,7 +120,7 @@ export async function main(ns) {
 
   ns.disableLog("ALL");
   ns.clearLog();
-  ns.tail();
+  ns.ui.openTail();
 
   ns.print(`${"═".repeat(70)}`);
   ns.print(`ADVANCED STOCK TRADER - STARTING`);
