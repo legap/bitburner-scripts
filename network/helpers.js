@@ -689,7 +689,7 @@ export function getErrorInfo(err) {
  * @param {string} message The message to display
  * @param {boolean} alsoPrintToTerminal Set to true to print not only to the current script's tail file, but to the terminal
  * @param {""|"success"|"warning"|"error"|"info"} toastStyle - If specified, your log will will also become a toast notification
- * @param {int} */
+ * @param {number} maxToastLength */
 export function log(
   ns,
   message = "",
@@ -734,8 +734,8 @@ export function scanAllServers(ns) {
 
 /** Get a dictionary of active source files, taking into account the current active bitNode as well (optionally disabled).
  * @param {NS} ns The nestcript instance passed to your script's main entry point
- * @param {bool} includeLevelsFromCurrentBitnode Set to true to use the current bitNode number to infer the effective source code level (for purposes of determining what features are unlocked)
- * @param {bool} silent Set to true if you want to minimize logging errors (e.g. due to not owning singularity or having insufficient RAM)
+ * @param {boolean} includeLevelsFromCurrentBitnode Set to true to use the current bitNode number to infer the effective source code level (for purposes of determining what features are unlocked)
+ * @param {boolean} silent Set to true if you want to minimize logging errors (e.g. due to not owning singularity or having insufficient RAM)
  * @returns {Promise<{[k: number]: number}>} A dictionary keyed by source file number, where the value is the level (between 1 and 3 for all but BN12) * */
 export async function getActiveSourceFiles(ns, includeLevelsFromCurrentBitnode = true, silent = true) {
   return await getActiveSourceFiles_Custom(ns, getNsDataThroughFile, includeLevelsFromCurrentBitnode, silent);
@@ -744,8 +744,8 @@ export async function getActiveSourceFiles(ns, includeLevelsFromCurrentBitnode =
 /** getActiveSourceFiles Helper that allows the user to pass in their chosen implementation of getNsDataThroughFile to minimize RAM usage
  * @param {NS} ns The nestcript instance passed to your script's main entry point
  * @param {(ns: NS, command: string, fName?: string, args?: any, verbose?: any, maxRetries?: number, retryDelayMs?: number, silent?: bool) => Promise<any>} fnGetNsDataThroughFile getActiveSourceFiles Helper that allows the user to pass in their chosen implementation of getNsDataThroughFile to minimize RAM usage
- * @param {bool} includeLevelsFromCurrentBitnode Set to true to use the current bitNode number to infer the effective source code level (for purposes of determining what features are unlocked)
- * @param {bool} silent Set to true if you want to minimize logging errors (e.g. due to not owning singularity or having insufficient RAM)
+ * @param {boolean} includeLevelsFromCurrentBitnode Set to true to use the current bitNode number to infer the effective source code level (for purposes of determining what features are unlocked)
+ * @param {boolean} silent Set to true if you want to minimize logging errors (e.g. due to not owning singularity or having insufficient RAM)
  * @returns {Promise<{[k: number]: number}>} A dictionary keyed by source file number, where the value is the level (between 1 and 3 for all but BN12) * */
 export async function getActiveSourceFiles_Custom(
   ns,
